@@ -1,7 +1,7 @@
 bl_info = {
     "name": "RLMM Toolkit",
     "author": "LeeroyJenkins0G",
-    "version": (1, 0, 13),   # addon plugin version
+    "version": (1, 0, 16),   # addon plugin version
     "blender": (2, 80, 0),  # minimum blender version
     "location": "View3D > Sidebar > Gen Tab",
     "description": "RLMM Toolkit: Blender to UDK",
@@ -23,7 +23,7 @@ from math import degrees, radians, pi
 
 class RLMMPJ_PT_Panel(bpy.types.Panel):
     bl_idname = "RLMMPJ_PT_Panel"
-    bl_label = "Project Name"
+    bl_label = "Set Directories"
     bl_category = "RLMM Toolkit"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
@@ -34,11 +34,10 @@ class RLMMPJ_PT_Panel(bpy.types.Panel):
         
         layout = self.layout
 
-        boxLayout1 = layout.box()
-        boxLayout1.label(text="Project Name",icon='DESKTOP')
+        boxLayout1 = layout.row().box()
         
-        row1 = boxLayout1.row()
-        row1.prop(context.scene, 'projectName')
+        boxLayout1.prop(context.scene, 'projectName')
+        boxLayout1.prop(context.scene, 'conf_path')
 
 
 class RLMM_PT_Panel(bpy.types.Panel):
@@ -87,13 +86,11 @@ class RLMM_PT_Panel(bpy.types.Panel):
         boxlayout5.prop(context.scene, "collectMaterials")
         boxlayout5.prop(context.scene, "physMat")
         
-        row3 = boxlayout5.row()
-        row3.prop(context.scene, 'conf_path')
         row2 = boxlayout5.row()
         row2.operator('custom.send_to_udk', text="Send to UDK")
         
-class RLMMBrushes_PT_Panel(bpy.types.Panel):
-    bl_idname = "RLMMBrushes_PT_Panel"
+class RLMMBRUSHES_PT_Panel(bpy.types.Panel):
+    bl_idname = "RLMMBRUSHES_PT_Panel"
     bl_label = "Brushes"
     bl_category = "RLMM Toolkit"
     bl_space_type = "VIEW_3D"
@@ -108,7 +105,30 @@ class RLMMBrushes_PT_Panel(bpy.types.Panel):
         boxLayout9 = layout.box()
         boxLayout9.label(text="T3D File",icon='CUBE')
         boxLayout9.operator('custom.send_to_t3d', text="Create Custom Brush")
+        
+class UDKDEFAULT_PT_Panel(bpy.types.Panel):
+    bl_idname = "UDKDEFAULT_PT_Panel"
+    bl_label = "UDK Default Objects"
+    bl_category = "RLMM Toolkit"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_context = 'objectmode'
 
+#create a panel (class) by deriving from the bpy Panel, this be the UI
+    def draw(self, context):
+        
+        layout = self.layout
+
+        boxLayout = layout.box()
+        boxLayout.label(text="Objects To Create",icon='EXPORT')
+        boxlayout2 = boxLayout.box()
+        boxlayout2.prop(context.scene, "defPillar")
+        boxlayout2.prop(context.scene, "defGoals")
+        boxlayout2.prop(context.scene, "defSpawns")
+        boxlayout2.prop(context.scene, "defBoost")
+        row = boxlayout2.row()
+        row.operator('custom.default_objects', text="Create Default Objects")
+        
 class setParent(bpy.types.Operator):
     bl_idname = "custom.set_parent"
     bl_label = "Set Parent"
@@ -161,13 +181,17 @@ class makeInstancesReal(bpy.types.Operator):
 
         bpy.ops.object.duplicates_make_real()
         
-        udkCollection = bpy.data.collections.new('UDK Collection')
+        if ('UDK Collection' not in str(bpy.data.collections[:])):
+            udkCollection = bpy.data.collections.new('UDK Collection')
+            bpy.context.scene.collection.children.link(udkCollection)
         
-        bpy.context.scene.collection.children.link(udkCollection)
-        
-        objCollection = bpy.data.collections.new(str(bpy.context.scene.prefabOBJ.users_collection[0].name).rstrip('.123456789'))
-        
-        bpy.context.scene.collection.children['UDK Collection'].children.link(objCollection)
+        if (str(bpy.context.scene.prefabOBJ.users_collection[0].name).rstrip('.123456789') not in str(bpy.data.collections['UDK Collection'].children[:])):
+            objCollection = bpy.data.collections.new(str(bpy.context.scene.prefabOBJ.users_collection[0].name).rstrip('.123456789'))
+            bpy.context.scene.collection.children['UDK Collection'].children.link(objCollection)
+        else:
+            #DOES A COLLECTION WITH THIS NAME EXIST AND WHERE IS IT
+            #collChild = #found collection index
+            objCollection = bpy.context.scene.collection.children['UDK Collection'].children[collChild]
         
         bpy.context.scene.collectionHolder = "{}".format(str(objCollection.name))
         
@@ -283,6 +307,7 @@ class setPosX(bpy.types.Operator):
             
             bpy.ops.transform.rotate(value=radians(90), orient_axis='X', orient_type='LOCAL', orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)), orient_matrix_type='LOCAL', constraint_axis=(False, False, True), mirror=True, use_proportional_edit=False, proportional_edit_falloff='SMOOTH', proportional_size=1, use_proportional_connected=False, use_proportional_projected=False, release_confirm=True)
 
+            
             objRotationX = obj.rotation_euler[0]
             objRotationY = obj.rotation_euler[1]
             objRotationZ = obj.rotation_euler[2]
@@ -583,21 +608,34 @@ class sendToUDK(bpy.types.Operator):
         outputFile = '{}{}'.format(bpy.path.abspath(bpy.context.scene.conf_path), "Blender2UDK.csv")
         textUDK = ""
         
-        if bpy.context.scene.collectData == True:
-            objectString = bpy.data.collections[bpy.context.scene.collectionHolder].objects[:]
+        if bpy.context.scene.collectRotations == True:
+            objCount = len(bpy.data.collections[bpy.context.scene.collectionHolder].objects[:])
         else:
-            objectString = bpy.context.selected_objects
+            objHolder = bpy.context.selected_objects
+            objCount = len(bpy.context.selected_objects[:])
+        
+        for selectedObj in bpy.context.selected_objects:
+            selectedObj.select_set(False)
             
-        for obj in objectString:    
-            if obj.type != 'MESH':
-                continue
+        loopCount = 0
+        
+        while loopCount < objCount:
+            
+            if bpy.context.scene.collectRotations == True: 
+                obj = bpy.data.collections[bpy.context.scene.collectionHolder].objects[loopCount]
+            else:
+                obj = objHolder[loopCount]
+        
+            obj.select_set(True)
+            
+            bpy.context.view_layer.objects.active = obj
             
             # LOCATION XYZ
             # --------------------------------------------------------------------
             center = obj.location
             centerX, centerY, centerZ = center[0]*100, center[1]*100, center[2]*100
             d, e, f = round(-centerX, 6), round(centerY, 6), round(centerZ, 6),
-            locationString = 'Location=(X={},Y={},Z={})'.format(d, e, f)
+            locationString = 'Location=(X={:f},Y={:f},Z={:f})'.format(d, e, f)
             
             # ROTATION XYZ 
             # --------------------------------------------------------------------
@@ -624,6 +662,7 @@ class sendToUDK(bpy.types.Operator):
             objName = obj.name.split('.')
             staticString = "{}.{}".format(mapName[-1], objName[0])
             
+            
             # MATERIAL LIST
             # --------------------------------------------------------------------
             materialCount = 0
@@ -648,48 +687,303 @@ class sendToUDK(bpy.types.Operator):
             # PHYSICAL MATERIAL APPLIED
             # --------------------------------------------------------------------
             if bpy.context.scene.physMat == True:
-                physString = "PhysMaterialOverride=PhysicalMaterial'{}.Materials.StickyWalls'".format(mapName[-1].lower())
+                physString = "PhysMaterialOverride=PhysicalMaterial'PhysicalMaterials.Collision_Sticky'"
             else:
                 physString = ''
+                
+            # FORMATTING FOR STATICMESH 
+            # --------------------------------------------------------------------
+            if ('StaticMesh' in str(objName)):
+                num = str(bpy.context.scene.numberSequencer).zfill(10)
+                textUDK += f"""
+Begin Map
+   Begin Level
+      Begin Actor Class=StaticMeshActor Name={str(objName[0])}_{num} Archetype=StaticMeshActor'Engine.Default__StaticMeshActor'
+         Begin Object Class=StaticMeshComponent Name=StaticMeshActor_{num} ObjName=StaticMeshComponent{num} Archetype=StaticMeshComponent'Engine.Default__StaticMeshActor:StaticMeshComponent0'
+            StaticMesh=StaticMesh'{staticString}'
+            VertexPositionVersionNumber=1
+            {materialNames.rstrip()}
+            ReplacementPrimitive=None
+            bAllowApproximateOcclusion=True
+            bAcceptsDynamicDecals=False
+            bForceDirectLightMap=True
+            bUsePrecomputedShadows=True
+            bDisableAllRigidBody=False
+            LightingChannels=(bInitialized=True,Static=True)
+            {physString}
+            Name="StaticMeshComponent"
+            ObjectArchetype=StaticMeshComponent'Engine.Default__StaticMeshActor:StaticMeshComponent0'
+         End Object
+         StaticMeshComponent=StaticMeshComponent'StaticMeshComponent{num}'
+         Components(0)=StaticMeshComponent'StaticMeshComponent{num}'
+         {locationString}
+         {rotationString}
+         {scaleString}
+         {tagString}
+         {layerString}
+         BlockRigidBody=True
+         CreationTime=0
+         CollisionComponent=StaticMeshComponent'StaticMeshComponent'
+         Name="{str(objName[0])}_{num}"
+         ObjectArchetype=StaticMeshActor'Engine.Default__StaticMeshActor'
+      End Actor
+   End Level
+Begin Surface
+End Surface
+End Map
+        """#.format(num, num, num, staticString, materialNames.rstrip(), physString, num, num, num, locationString, rotationString, scaleString, tagString, layerString, num)
             
-            textUDK += """
-        Begin Map
-           Begin Level
-              Begin Actor Class=StaticMeshActor Name=StaticMeshActor_4 Archetype=StaticMeshActor'Engine.Default__StaticMeshActor'
-                 Begin Object Class=StaticMeshComponent Name=StaticMeshComponent0 ObjName=StaticMeshComponent Archetype=StaticMeshComponent'Engine.Default__StaticMeshActor:StaticMeshComponent0'
-                    StaticMesh=StaticMesh'{}'
-                    VertexPositionVersionNumber=1
-                    {}
-                    ReplacementPrimitive=None
-                    bAllowApproximateOcclusion=True
-                    bAcceptsDynamicDecals=False
-                    bForceDirectLightMap=True
-                    bUsePrecomputedShadows=True
-                    bDisableAllRigidBody=False
-                    LightingChannels=(bInitialized=True,Static=True)
-                    {}
-                    Name="StaticMeshComponent"
-                    ObjectArchetype=StaticMeshComponent'Engine.Default__StaticMeshActor:StaticMeshComponent0'
-                 End Object
-                 StaticMeshComponent=StaticMeshComponent'StaticMeshComponent0'
-                 Components(0)=StaticMeshComponent'StaticMeshComponent0'
-                 {}
-                 {}
-                 {}
-                 {}
-                 {}
-                 BlockRigidBody=True
-                 CreationTime=0
-                 Tag="StaticMeshActor"
-                 CollisionComponent=StaticMeshComponent'StaticMeshComponent'
-                 Name="StaticMeshActor"
-                 ObjectArchetype=StaticMeshActor'Engine.Default__StaticMeshActor'
-              End Actor
-           End Level
-        Begin Surface
-        End Surface
-        End Map
-        """.format(staticString, materialNames.rstrip(), physString, locationString, rotationString, scaleString, tagString, layerString)
+            # FORMATTING FOR SPOTLIGHT 
+            # --------------------------------------------------------------------
+            elif ('Spot' in str(objName)):
+                bpy.ops.custom.set_pos_y()
+                # ROTATION XYZ FOR SPOTLIGHTS IS NEGATIVE 90 DEGREES IN UDK SO WE HAVE TO ADJUST IT.
+                # --------------------------------------------------------------------
+                orientationX = degrees(obj.rotation_euler.x)*-1
+                orientationY = degrees(obj.rotation_euler.y)
+                orientationZ = degrees(obj.rotation_euler.z)*-1
+                a, b, c = round(orientationX * (65536 / 360)), round(orientationY * (65536 / 360)), round(orientationZ * (65536 / 360))
+                
+                rotationString = 'Rotation=(Pitch={},Yaw={},Roll={})'.format(b, c, a)
+                
+                bpy.ops.custom.set_neg_y()
+                
+                textUDK += f"""Begin Map
+   Begin Level
+      Begin Actor Class=SpotLightToggleable Name=SpotLightToggleable_1 Archetype=SpotLightToggleable'Engine.Default__SpotLightToggleable'
+         Begin Object Class=DrawLightConeComponent Name=DrawInnerCone0 ObjName=DrawLightConeComponent_2 Archetype=DrawLightConeComponent'Engine.Default__SpotLightToggleable:DrawInnerCone0'
+            ConeRadius=1024.000000
+            ConeAngle=0.000000
+            ReplacementPrimitive=None
+            LightingChannels=(bInitialized=True,Dynamic=True)
+            Name="DrawLightConeComponent_2"
+            ObjectArchetype=DrawLightConeComponent'Engine.Default__SpotLightToggleable:DrawInnerCone0'
+         End Object
+         Begin Object Class=DrawLightConeComponent Name=DrawOuterCone0 ObjName=DrawLightConeComponent_3 Archetype=DrawLightConeComponent'Engine.Default__SpotLightToggleable:DrawOuterCone0'
+            ConeColor=(B=255,G=255,R=200,A=255)
+            ConeRadius=1024.000000
+            ReplacementPrimitive=None
+            LightingChannels=(bInitialized=True,Dynamic=True)
+            Name="DrawLightConeComponent_3"
+            ObjectArchetype=DrawLightConeComponent'Engine.Default__SpotLightToggleable:DrawOuterCone0'
+         End Object
+         Begin Object Class=DrawLightRadiusComponent Name=DrawLightRadius0 ObjName=DrawLightRadiusComponent_2 Archetype=DrawLightRadiusComponent'Engine.Default__SpotLightToggleable:DrawLightRadius0'
+            SphereRadius=1024.000000
+            ReplacementPrimitive=None
+            LightingChannels=(bInitialized=True,Dynamic=True)
+            Name="DrawLightRadiusComponent_2"
+            ObjectArchetype=DrawLightRadiusComponent'Engine.Default__SpotLightToggleable:DrawLightRadius0'
+         End Object
+         Begin Object Class=DrawLightRadiusComponent Name=DrawLightSourceRadius0 ObjName=DrawLightRadiusComponent_3 Archetype=DrawLightRadiusComponent'Engine.Default__SpotLightToggleable:DrawLightSourceRadius0'
+            SphereColor=(B=0,G=239,R=231,A=255)
+            SphereRadius=32.000000
+            ReplacementPrimitive=None
+            LightingChannels=(bInitialized=True,Dynamic=True)
+            Name="DrawLightRadiusComponent_3"
+            ObjectArchetype=DrawLightRadiusComponent'Engine.Default__SpotLightToggleable:DrawLightSourceRadius0'
+         End Object
+         Begin Object Class=SpotLightComponent Name=SpotLightComponent0 ObjName=SpotLightComponent_1 Archetype=SpotLightComponent'Engine.Default__SpotLightToggleable:SpotLightComponent0'
+            PreviewInnerCone=DrawLightConeComponent'DrawLightConeComponent_2'
+            PreviewOuterCone=DrawLightConeComponent'DrawLightConeComponent_3'
+            CachedParentToWorld=(XPlane=(W=0.000000,X=0.000000,Y=0.000000,Z=-1.000000),YPlane=(W=0.000000,X=-0.000000,Y=1.000000,Z=-0.000000),ZPlane=(W=0.000000,X=1.000000,Y=0.000000,Z=0.000000),WPlane=(W=1.000000,X=-60.936401,Y=144.001099,Z=1035.462280))
+            PreviewLightRadius=DrawLightRadiusComponent'DrawLightRadiusComponent_2'
+            LightmassSettings=(LightSourceRadius=32.000000,IndirectLightingScale=0.000000)
+            PreviewLightSourceRadius=DrawLightRadiusComponent'DrawLightRadiusComponent_3'
+            LightGuid=(A=199097462,B=1258459027,C=-1227397451,D=-1066570931)
+            LightmapGuid=(A=1471253091,B=1300878571,C=1949417371,D=346712220)
+            CastDynamicShadows=False
+            bPrecomputedLightingIsValid=False
+            LightingChannels=(Dynamic=False)
+            LightAffectsClassification=LAC_STATIC_AFFECTING
+            Name="SpotLightComponent_1"
+            ObjectArchetype=SpotLightComponent'Engine.Default__SpotLightToggleable:SpotLightComponent0'
+         End Object
+         Begin Object Class=SpriteComponent Name=Sprite ObjName=SpriteComponent_254 Archetype=SpriteComponent'Engine.Default__SpotLightToggleable:Sprite'
+            Sprite=Texture2D'EditorResources.LightIcons.Light_Spot_Toggleable_Statics'
+            SpriteCategoryName="Lighting"
+            ReplacementPrimitive=None
+            HiddenGame=True
+            AlwaysLoadOnClient=False
+            AlwaysLoadOnServer=False
+            LightingChannels=(bInitialized=True,Dynamic=True)
+            Scale=0.250000
+            Name="SpriteComponent_254"
+            ObjectArchetype=SpriteComponent'Engine.Default__SpotLightToggleable:Sprite'
+         End Object
+         Begin Object Class=ArrowComponent Name=ArrowComponent0 ObjName=ArrowComponent_72 Archetype=ArrowComponent'Engine.Default__SpotLightToggleable:ArrowComponent0'
+            ArrowColor=(B=255,G=200,R=150,A=255)
+            bTreatAsASprite=True
+            SpriteCategoryName="Lighting"
+            ReplacementPrimitive=None
+            LightingChannels=(bInitialized=True,Dynamic=True)
+            Name="ArrowComponent_72"
+            ObjectArchetype=ArrowComponent'Engine.Default__SpotLightToggleable:ArrowComponent0'
+         End Object
+         LightComponent=SpotLightComponent'SpotLightComponent_1'
+         Components(0)=SpriteComponent'SpriteComponent_254'
+         Components(1)=DrawLightRadiusComponent'DrawLightRadiusComponent_2'
+         Components(2)=DrawLightConeComponent'DrawLightConeComponent_2'
+         Components(3)=DrawLightConeComponent'DrawLightConeComponent_3'
+         Components(4)=DrawLightRadiusComponent'DrawLightRadiusComponent_3'
+         Components(5)=SpotLightComponent'SpotLightComponent_1'
+         Components(6)=ArrowComponent'ArrowComponent_72'
+         {locationString}
+         {rotationString}
+         {scaleString}
+         CreationTime=953.067566
+         {tagString}
+         {layerString}
+         Name="SpotLightToggleable_1"
+         ObjectArchetype=SpotLightToggleable'Engine.Default__SpotLightToggleable'
+      End Actor
+   End Level
+Begin Surface
+End Surface
+End Map"""
+
+            elif ('GoalVolume' in str(objName)):
+                
+                bpy.ops.custom.send_to_t3d()
+                
+                num = str(bpy.context.scene.numberSequencer).zfill(10)
+                
+                textUDK += f"""
+Begin Map
+   Begin Level
+      Begin Actor Class=GoalVolume_TA Name=GoalVolume_TA_{num} Archetype=GoalVolume_TA'tagame.Default__GoalVolume_TA'
+         Begin Object Class=Polys Name=Polys_{num}
+            Name="Polys_{num}"
+            ObjectArchetype=Polys'Engine.Default__Polys'
+         End Object
+         Begin Object Class=Goal_TA Name=DefaultGoal ObjName=Goal_TA_{num} Archetype=Goal_TA'tagame.Default__GoalVolume_TA:DefaultGoal'
+            Name="Goal_TA_{num}"
+            ObjectArchetype=Goal_TA'tagame.Default__GoalVolume_TA:DefaultGoal'
+         End Object
+         Begin Object Class=BrushComponent Name=BrushComponent0 ObjName=BrushComponent_{num} Archetype=BrushComponent'tagame.Default__GoalVolume_TA:BrushComponent0'
+            Brush=Model'Model_{num}'
+            ReplacementPrimitive=None
+            bAcceptsLights=True
+            CollideActors=True
+            BlockNonZeroExtent=True
+            bDisableAllRigidBody=True
+            AlwaysLoadOnClient=True
+            AlwaysLoadOnServer=True
+            LightingChannels=(bInitialized=True,Dynamic=True)
+            Name="BrushComponent_{num}"
+            ObjectArchetype=BrushComponent'tagame.Default__GoalVolume_TA:BrushComponent0'
+         End Object
+         Goal=Goal_TA'Goal_TA_{num}'
+         Begin Brush Name=Model_{num}
+            {bpy.context.scene.textT3d}
+         End Brush
+         Brush=Model'Model_{num}'
+         BrushComponent=BrushComponent'BrushComponent_{num}'
+         Components(0)=BrushComponent'BrushComponent_{num}'
+         {locationString}
+         {rotationString}
+         {scaleString}
+         CreationTime=0
+         {tagString}
+         CollisionComponent=BrushComponent'BrushComponent_{num}'
+         Name="GoalVolume_TA_{num}"
+         ObjectArchetype=GoalVolume_TA'tagame.Default__GoalVolume_TA'
+      End Actor
+   End Level
+Begin Surface
+End Surface
+End Map
+"""
+            elif ('DynamicTrigger' in str(objName)):
+                    
+                bpy.ops.custom.send_to_t3d()
+                
+                num = str(bpy.context.scene.numberSequencer).zfill(10)
+                
+                textUDK += f"""Begin Map
+   Begin Level
+      Begin Actor Class=DynamicTriggerVolume Name={str(objName[0])}_{num} Archetype=DynamicTriggerVolume'Engine.Default__DynamicTriggerVolume'
+         Begin Object Class=Polys Name=Polys_{num}
+            Name="Polys_{num}"
+            ObjectArchetype=Polys'Engine.Default__Polys'
+         End Object
+         Begin Object Class=BrushComponent Name=BrushComponent0 ObjName=BrushComponent_{num} Archetype=BrushComponent'Engine.Default__DynamicTriggerVolume:BrushComponent0'
+            Brush=Model'Model_{num}'
+            ReplacementPrimitive=None
+            bAcceptsLights=True
+            CollideActors=True
+            BlockNonZeroExtent=True
+            bDisableAllRigidBody=True
+            AlwaysLoadOnClient=True
+            AlwaysLoadOnServer=True
+            LightingChannels=(bInitialized=True,Dynamic=True)
+            Name="BrushComponent_{num}"
+            ObjectArchetype=BrushComponent'Engine.Default__DynamicTriggerVolume:BrushComponent0'
+         End Object
+         Begin Brush Name=Model_{num}
+            {bpy.context.scene.textT3d}
+         End Brush
+         Brush=Model'Model_{num}'
+         BrushComponent=BrushComponent'BrushComponent_{num}'
+         Components(0)=BrushComponent'BrushComponent_{num}'
+         {locationString}
+         {rotationString}
+         {scaleString}
+         CreationTime=0
+         {tagString}
+         CollisionComponent=BrushComponent'BrushComponent_{num}'
+         Name="{str(objName[0])}_{num}"
+         ObjectArchetype=DynamicTriggerVolume'Engine.Default__DynamicTriggerVolume'
+      End Actor
+   End Level
+Begin Surface
+End Surface
+End Map"""
+
+            # FORMATTTING FOR EVERYTHING ELSE 
+            # --------------------------------------------------------------------
+            else:
+                textUDK += f"""
+Begin Map
+   Begin Level
+      Begin Actor Class=StaticMeshActor Name={str(objName[0])}_{num} Archetype=StaticMeshActor'Engine.Default__StaticMeshActor'
+         Begin Object Class=StaticMeshComponent Name=StaticMeshComponent{num} ObjName=StaticMeshComponent Archetype=StaticMeshComponent'Engine.Default__StaticMeshActor:StaticMeshComponent{num}'
+            StaticMesh=StaticMesh'{staticString}'
+            VertexPositionVersionNumber=1
+            {materialNames.rstrip()}
+            ReplacementPrimitive=None
+            bAllowApproximateOcclusion=True
+            bAcceptsDynamicDecals=False
+            bForceDirectLightMap=True
+            bUsePrecomputedShadows=True
+            bDisableAllRigidBody=False
+            LightingChannels=(bInitialized=True,Static=True)
+            {physString}
+            Name="StaticMeshComponent"
+            ObjectArchetype=StaticMeshComponent'Engine.Default__StaticMeshActor:StaticMeshComponent{num}'
+         End Object
+         StaticMeshComponent=StaticMeshComponent'StaticMeshComponent{num}'
+         Components(0)=StaticMeshComponent'StaticMeshComponent{num}'
+         {locationString}
+         {rotationString}
+         {scaleString}
+         {tagString}
+         {layerString}
+         BlockRigidBody=True
+         CreationTime=0
+         CollisionComponent=StaticMeshComponent'StaticMeshComponent'
+         Name="{str(objName[0])}_{num}"
+         ObjectArchetype=StaticMeshActor'Engine.Default__StaticMeshActor'
+      End Actor
+   End Level
+Begin Surface
+End Surface
+End Map
+        """
+        
+            loopCount += 1
+            
+            bpy.context.scene.numberSequencer += 1
+
 
         f = open( outputFile, 'w' )
         f.writelines( textUDK.rstrip() )
@@ -697,7 +991,7 @@ class sendToUDK(bpy.types.Operator):
         pyperclip.copy(textUDK.rstrip())
         
         return {'FINISHED'}
-    
+
 class sendToT3d(bpy.types.Operator):
     bl_idname = "custom.send_to_t3d"
     bl_label = "Send to T3d"
@@ -714,90 +1008,135 @@ class sendToT3d(bpy.types.Operator):
         
         objectStringName = objectString.name.rstrip('.0123456789')
         
-        textT3d = 'Begin PolyList\n'
+        bpy.context.scene.textT3d = 'Begin PolyList'
+        
+        linkCount = 0
         
         for f in objectString.data.polygons:
             
-            polyNormal = f.normal
+            verticeList = [linkCount]
             
-            if ('-' in str(polyNormal.x)):
-                polyX = str(polyNormal.x).lstrip('-').split('.')
-                polyXString = '-' + polyX[0].zfill(5) + '.' + polyX[1].ljust(6, '0')
-            else:
-                polyX = str(polyNormal.x).split('.')
-                polyXString = '+' + polyX[0].zfill(5) + '.' + polyX[1].ljust(6, '0')
-                
-            if ('-' in str(polyNormal.y)):
-                polyY = str(polyNormal.y).lstrip('-').split('.')
-                polyYString = '-' + polyY[0].zfill(5) + '.' + polyY[1].ljust(6, '0')
-            else:
-                polyY = str(polyNormal.y).split('.')
-                polyYString = '+' + polyY[0].zfill(5) + '.' + polyY[1].ljust(6, '0')
-                
-            if ('-' in str(polyNormal.z)):
-                polyZ = str(polyNormal.z).lstrip('-').split('.')
-                polyZString = '-' + polyZ[0].zfill(5) + '.' + polyZ[1].ljust(6, '0')
-            else:
-                polyZ = str(polyNormal.z).split('.')
-                polyZString = '+' + polyZ[0].zfill(5) + '.' + polyZ[1].ljust(6, '0')
+            originShort = objectString.data.vertices[f.vertices[0]].co
             
-            polyString = '\t\tNormal   {},{},{}'.format(polyXString, polyYString, polyZString)
+            originList = [originShort.x, originShort.y, originShort.z]
+            
+            for origin in originList:
+                    
+                if ('-' in str(origin)):
+                    idxorigin = str(round(origin * 100, 6)).lstrip('-').split('.')
+                    idxoriginString = '-' + idxorigin[0].zfill(5) + '.' + idxorigin[1].ljust(6, '0')
+                else:
+                    idxorigin = str(round(origin * 100, 6)).split('.')
+                    idxoriginString = '+' + idxorigin[0].zfill(5) + '.' + idxorigin[1].ljust(6, '0')
+                
+                verticeList.append(idxoriginString)
+            
+            polyList = [f.normal.x, f.normal.y, f.normal.z]
+            
+            for polyIdx in polyList:
+            
+                if ('-' in str(polyIdx)):
+                    polySplit = str(round(polyIdx, 6)).lstrip('-').split('.')
+                    polyString = '-' + polySplit[0].zfill(5) + '.' + polySplit[1].ljust(6, '0')
+                else:
+                    polySplit = str(round(polyIdx, 6)).split('.')
+                    polyString = '+' + polySplit[0].zfill(5) + '.' + polySplit[1].ljust(6, '0')
+                
+                verticeList.append(polyString)
             
             if f.normal.x != 0:
-                uString = '\t\tTextureU +00000.000000,+00001.000000,+00000.000000'
-                vString = '\t\tTextureV +00000.000000,+00000.000000,+00001.000000'
+                verticeList.extend(['+00000.000000','+00001.000000','+00000.000000'])
+                verticeList.extend(['+00000.000000','+00000.000000','+00001.000000'])
             elif f.normal.y !=0:
-                uString = '\t\tTextureU +00001.000000,+00000.000000,+00000.000000'
-                vString = '\t\tTextureV +00000.000000,+00000.000000,+00001.000000'
+                verticeList.extend(['+00001.000000','+00000.000000','+00000.000000'])
+                verticeList.extend(['+00000.000000','+00000.000000','+00001.000000'])
             else:
-                uString = '\t\tTextureU +00001.000000,+00000.000000,+00000.000000'
-                vString = '\t\tTextureV +00000.000000,+00001.000000,+00000.000000'
-            
-            verticeString = ''
+                verticeList.extend(['+00001.000000','+00000.000000','+00000.000000'])
+                verticeList.extend(['+00000.000000','+00001.000000','+00000.000000'])
             
             for idx in f.vertices:
-                if ('-' in str(objectString.data.vertices[idx].co.x)):
-                    idxX = str(objectString.data.vertices[idx].co.x * 100).lstrip('-').split('.')
-                    idxXString = '-' + idxX[0].zfill(5) + '.' + idxX[1].ljust(6, '0')
-                else:
-                    idxX = str(objectString.data.vertices[idx].co.x * 100).split('.')
-                    idxXString = '+' + idxX[0].zfill(5) + '.' + idxX[1].ljust(6, '0')
+
+                idxList = [objectString.data.vertices[idx].co.x, objectString.data.vertices[idx].co.y, objectString.data.vertices[idx].co.z]
+
+                for coord in idxList:
                     
-                if ('-' in str(objectString.data.vertices[idx].co.y)):
-                    idxY = str(objectString.data.vertices[idx].co.y * 100).lstrip('-').split('.')
-                    idxYString = '-' + idxY[0].zfill(5) + '.' + idxY[1].ljust(6, '0')
-                else:
-                    idxY = str(objectString.data.vertices[idx].co.y * 100).split('.')
-                    idxYString = '+' + idxY[0].zfill(5) + '.' + idxY[1].ljust(6, '0')
+                    if ('-' in str(coord)):
+                        idxCoord = str(round(coord * 100, 6)).lstrip('-').split('.')
+                        idxCoordString = '-' + idxCoord[0].zfill(5) + '.' + idxCoord[1].ljust(6, '0')
+                    else:
+                        idxCoord = str(round(coord * 100, 6)).split('.')
+                        idxCoordString = '+' + idxCoord[0].zfill(5) + '.' + idxCoord[1].ljust(6, '0')
                     
-                if ('-' in str(objectString.data.vertices[idx].co.z)):
-                    idxZ = str(objectString.data.vertices[idx].co.z * 100).lstrip('-').split('.')
-                    idxZString = '-' + idxZ[0].zfill(5) + '.' + idxZ[1].ljust(6, '0')
-                else:
-                    idxZ = str(objectString.data.vertices[idx].co.z * 100).split('.')
-                    idxZString = '+' + idxZ[0].zfill(5) + '.' + idxZ[1].ljust(6, '0')
-              
-                verticeString += '\t\tVertex   {},{},{}\n'.format(idxXString, idxYString, idxZString)
+                    verticeList.append(idxCoordString)
 
+            linkCount += 1
+            
+            bpy.context.scene.textT3d += """\n\tBegin Polygon Flags=3584 Link={}
+        Origin   {},{},{}
+        Normal   {},{},{}
+        TextureU {},{},{}
+        TextureV {},{},{}
+        Vertex   {},{},{}
+        Vertex   {},{},{}
+        Vertex   {},{},{}
+        Vertex   {},{},{}
+    End Polygon""".format(*verticeList)
 
-            polyOrigin = verticeString.split('\n') 
-            
-            polyOriginString = polyOrigin[0].replace('Vertex', 'Origin')
-            
-            startString = '\tBegin Polygon Texture=EngineMaterials.DefaultMaterial Flags=3584'
-            
-            endString = '\tEnd Polygon'
-            
-            textT3d += '{}\n{}\n{}\n{}\n{}\n{}{}\n'.format(startString, polyOriginString, polyString, uString, vString, verticeString, endString)
-
-        textT3d += 'End PolyList'
+        bpy.context.scene.textT3d += '\nEnd PolyList'
         fileName = '{}{}'.format(objectStringName, '.t3d')
         outputT3d = '{}{}'.format(bpy.path.abspath(bpy.context.scene.conf_path), fileName)
        
         f = open( outputT3d, 'w' )
-        f.writelines( textT3d.rstrip() )
+        f.writelines( bpy.context.scene.textT3d.rstrip() )
         f.close()   
-        pyperclip.copy(textT3d.rstrip())
+        pyperclip.copy(bpy.context.scene.textT3d.rstrip())
+        
+        return {'FINISHED'}
+    
+class defaultObjects(bpy.types.Operator):
+    bl_idname = "custom.default_objects"
+    bl_label = "Default UDK Objects"
+    bl_description = "Creates Default UDK Objects"
+
+    
+    @classmethod
+    def poll(cls, context):
+        return context.selected_objects is not None
+    
+    def execute(self, context):
+        
+        num = str(bpy.context.scene.numberSequencer).zfill(10)
+        
+        outputFile = '{}{}'.format(bpy.path.abspath(bpy.context.scene.conf_path), "udkDefaultObjects.csv")
+        textDefUDK = ""
+            
+        if bpy.context.scene.defGoals == True:
+            
+
+            textDefUDK += f""""""
+                
+            loopCount += 1
+            bpy.context.scene.numberSequencer += 1
+                        
+        if bpy.context.scene.defSpawns == True:
+            # MAKE SPAWNS TEXT
+            textDefUDK += f""""""
+            bpy.context.scene.numberSequencer += 1
+            
+        if bpy.context.scene.defBoost == True:
+            # MAKE SPAWNS TEXT
+            textDefUDK += f""""""
+            bpy.context.scene.numberSequencer += 1
+            
+        if bpy.context.scene.defPillar == True:
+            # MAKE PILLAR TEXT
+            textDefUDK += f""""""
+            bpy.context.scene.numberSequencer += 1
+                    
+        f = open( outputFile, 'w' )
+        f.writelines( textDefUDK.rstrip() )
+        f.close()   
+        pyperclip.copy(textDefUDK.rstrip())
         
         return {'FINISHED'}
 
@@ -806,7 +1145,8 @@ class sendToT3d(bpy.types.Operator):
 def register():
     #register the classes with the correct function
     bpy.types.Scene.collectionHolder = bpy.props.StringProperty(name="", default = "", description = "")
-    bpy.types.Scene.projectName = bpy.props.StringProperty(name="", default = "", description = "Define export directory for CSV file", subtype='FILE_PATH')
+    bpy.types.Scene.projectName = bpy.props.StringProperty(name="UDK", default = "", description = "Select the UDK file you're currently working on.", subtype='FILE_PATH')
+    bpy.types.Scene.textT3d = bpy.props.StringProperty(name="", default = "", description = "")
     bpy.types.Scene.prefabOBJ = bpy.props.PointerProperty(name="Object", type=bpy.types.Object)
     bpy.types.Scene.prefabPLANE = bpy.props.PointerProperty(name="Plane", type=bpy.types.Object)
     bpy.types.Scene.scaleFACES = bpy.props.BoolProperty(name="Scale Prefab To Plane")
@@ -815,7 +1155,12 @@ def register():
     bpy.types.Scene.collectMaterials = bpy.props.BoolProperty(name="Collect Materials", default=True)
     bpy.types.Scene.collectT3d = bpy.props.BoolProperty(name="Auto Collect Objects", default=True)
     bpy.types.Scene.physMat = bpy.props.BoolProperty(name="Apply StickyWalls", default=True)
+    bpy.types.Scene.defPillar = bpy.props.BoolProperty(name="Default Pillar", default=True)
+    bpy.types.Scene.defGoals = bpy.props.BoolProperty(name="Default Goals", default=True)
+    bpy.types.Scene.defSpawns = bpy.props.BoolProperty(name="Default Spawns", default=True)
+    bpy.types.Scene.defBoost = bpy.props.BoolProperty(name="Default Boost", default=True)
     bpy.types.Scene.conf_path = bpy.props.StringProperty(name="CSV", default = "", description = "Define export directory for CSV file", subtype='FILE_PATH')
+    bpy.types.Scene.numberSequencer = bpy.props.IntProperty(name="", default=0, min=0, max=1000000000)
     bpy.utils.register_class(setPosZ)
     bpy.utils.register_class(setNegZ)
     bpy.utils.register_class(setPosY)
@@ -824,9 +1169,11 @@ def register():
     bpy.utils.register_class(setNegX)
     bpy.utils.register_class(sendToUDK)
     bpy.utils.register_class(sendToT3d)
+    bpy.utils.register_class(defaultObjects)
     bpy.utils.register_class(RLMMPJ_PT_Panel)
     bpy.utils.register_class(RLMM_PT_Panel)
-    bpy.utils.register_class(RLMMBrushes_PT_Panel)
+    bpy.utils.register_class(RLMMBRUSHES_PT_Panel)
+    bpy.utils.register_class(UDKDEFAULT_PT_Panel)
     bpy.utils.register_class(setParent)
     bpy.utils.register_class(makeInstancesReal)
 
@@ -841,9 +1188,11 @@ def unregister():
     bpy.utils.unregister_class(setNegX)       
     bpy.utils.unregister_class(sendToUDK)
     bpy.utils.unregister_class(sendToT3d)
+    bpy.utils.unregister_class(defaultObjects)
     bpy.utils.unregister_class(RLMMPJ_PT_Panel)
     bpy.utils.unregister_class(RLMM_PT_Panel)
-    bpy.utils.unregister_class(RLMMBrushes_PT_Panel)
+    bpy.utils.unregister_class(RLMMBRUSHES_PT_Panel)
+    py.utils.register_class(UDKDEFAULT_PT_Panel)
     bpy.utils.unregister_class(setParent)    
     bpy.utils.unregister_class(makeInstancesReal) 
 
