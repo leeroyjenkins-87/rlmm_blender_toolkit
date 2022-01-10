@@ -1,6 +1,6 @@
 import bpy
 import pyperclip
-from def_obj_vars import *
+from .def_obj_vars import *
 
 class defaultObjects(bpy.types.Operator):
     bl_idname = "custom.default_objects"

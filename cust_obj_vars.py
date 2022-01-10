@@ -1,7 +1,7 @@
 # import bpy
 # DYNAMIC TRIGGER STRING
 # ---------------------------------------------
-dynamicTriggerString = f"""Begin Map
+dynamicTriggerString = """Begin Map
    Begin Level
       Begin Actor Class=DynamicTriggerVolume Name=DynamicTriggerVolume_{0} Archetype=DynamicTriggerVolume'Engine.Default__DynamicTriggerVolume'
          Begin Object Class=Polys Name=Polys_{0}
@@ -43,9 +43,9 @@ End Surface
 End Map"""
 
 
-SPOTLIGHT STRING
----------------------------------------------        
-spotLightString = f"""Begin Map
+# SPOTLIGHT STRING
+# ---------------------------------------------        
+spotLightString = """Begin Map
    Begin Level
       Begin Actor Class=SpotLightToggleable Name=SpotLightToggleable_{0} Archetype=SpotLightToggleable'Engine.Default__SpotLightToggleable'
          Begin Object Class=DrawLightConeComponent Name=DrawInnerCone0 ObjName=DrawLightConeComponent_2_{0} Archetype=DrawLightConeComponent'Engine.Default__SpotLightToggleable:DrawInnerCone0'

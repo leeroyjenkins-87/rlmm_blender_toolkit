@@ -6,8 +6,8 @@ import pyperclip
 #from mathutils import Matrix, Vector
 # Don't think i need radians or pi
 from math import degrees#, radians, pi
-from def_obj_vars import *
-from cust_obj_vars import *
+from .def_obj_vars import *
+from .cust_obj_vars import *
 
 class sendToUDK(bpy.types.Operator):
     bl_idname = "custom.send_to_udk"
@@ -20,6 +20,7 @@ class sendToUDK(bpy.types.Operator):
         return context.selected_objects is not None
     
     def execute(self, context):
+        num = str(bpy.context.scene.numberSequencer).zfill(10)
         
         outputFile = '{}{}'.format(bpy.path.abspath(bpy.context.scene.conf_path), "Blender2UDK.csv")
         textUDK = ""
@@ -59,7 +60,7 @@ class sendToUDK(bpy.types.Operator):
             
             # ROTATION XYZ 
             # --------------------------------------------------------------------
-            rotList = self.stringFormatter(obj.rotation_euler)
+            rotList = self.getRot(obj.rotation_euler)
 
             # SCALE XYZ
             # --------------------------------------------------------------------
@@ -111,9 +112,7 @@ class sendToUDK(bpy.types.Operator):
                 
             # FORMATTING FOR STATICMESH 
             # --------------------------------------------------------------------
-            if ('StaticMesh' in str(objName)):
-                num = str(bpy.context.scene.numberSequencer).zfill(10)
-                
+            if ('StaticMesh' in str(objName)):                
                 textUDK += staticMeshString.format(num, staticString, materialNames.rstrip(), physString, locList, rotList, scaleList, tagString, layerString, objName)
             
             # FORMATTING FOR SPOTLIGHT 
@@ -123,7 +122,7 @@ class sendToUDK(bpy.types.Operator):
                 # ROTATION XYZ FOR SPOTLIGHTS IS NEGATIVE 90 DEGREES IN UDK SO WE HAVE TO ADJUST IT.
                 bpy.ops.custom.set_pos_y()
 
-                rotList = self.stringFormatter(rot)
+                rotList = self.getRot(obj.rotation_euler)
                 
                 # ADUJUST ROTATION BACK 90 DEGREES
                 bpy.ops.custom.set_neg_y()
@@ -136,9 +135,7 @@ class sendToUDK(bpy.types.Operator):
                 teamNum = 0
                 
                 bpy.ops.custom.send_to_t3d()
-                
-                num = str(bpy.context.scene.numberSequencer).zfill(10)
-                
+
                 #IF LOCATION == NEGATIVE Y SET TO TEAM NUMBER 1
                 if locList[1] < 0:
                     teamNum = 1
@@ -148,9 +145,7 @@ class sendToUDK(bpy.types.Operator):
             elif ('DynamicTrigger' in str(objName)):
                     
                 bpy.ops.custom.send_to_t3d()
-                
-                num = str(bpy.context.scene.numberSequencer).zfill(10)
-                
+
                 textUDK += dynamicTriggerString.format(num, bpy.context.scene.textT3d, locList, rotList, scaleList, tagString, layerString, objName)
 
             # FORMATTTING FOR EVERYTHING ELSE 
