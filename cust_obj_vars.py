@@ -34,7 +34,7 @@ dynamicTriggerString = """Begin Map
          Tag="{5}"
          Layer="{6}"
          CollisionComponent=BrushComponent'BrushComponent_{0}'
-         Name="{7}_{0}"
+         Name="{5}_{0}"
          ObjectArchetype=DynamicTriggerVolume'Engine.Default__DynamicTriggerVolume'
       End Actor
    End Level
@@ -130,7 +130,7 @@ spotLightString = """Begin Map
          CreationTime=0
          Tag="{4}"
          Layer="{5}"
-         Name="{6}_{0}"
+         Name="{4}_{0}"
          ObjectArchetype=SpotLightToggleable'Engine.Default__SpotLightToggleable'
       End Actor
    End Level

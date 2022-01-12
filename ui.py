@@ -45,6 +45,7 @@ class RLMM_PT_Panel(bpy.types.Panel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_context = 'objectmode'
+    bl_options = {"DEFAULT_CLOSED"}
 
 #create a panel (class) by deriving from the bpy Panel, this be the UI
     def draw(self, context):
@@ -68,7 +69,7 @@ class RLMM_PT_Panel(bpy.types.Panel):
         boxLayout3.label(text="Set Rotation",icon='ORIENTATION_LOCAL')
         boxlayout8 = boxLayout3.box()
         boxlayout8.prop(context.scene, "collectRotations")
-        
+
         subrow = boxlayout8.row(align=True)
         subrow.operator('custom.set_neg_x', text="-X")
         subrow.operator('custom.set_pos_x', text="+X")
@@ -94,6 +95,7 @@ class RLMMBRUSHES_PT_Panel(bpy.types.Panel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_context = 'objectmode'
+    bl_options = {"DEFAULT_CLOSED"}
 
 #create a panel (class) by deriving from the bpy Panel, this be the UI
     def draw(self, context):
@@ -111,6 +113,7 @@ class UDKDEFAULT_PT_Panel(bpy.types.Panel):
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_context = 'objectmode'
+    bl_options = {"DEFAULT_CLOSED"}
 
 #create a panel (class) by deriving from the bpy Panel, this be the UI
     def draw(self, context):
@@ -126,3 +129,26 @@ class UDKDEFAULT_PT_Panel(bpy.types.Panel):
         boxlayout2.prop(context.scene, "defBoost")
         row = boxlayout2.row()
         row.operator('custom.default_objects', text="Create Default Objects")
+
+class errorMessage(bpy.types.Operator):
+    bl_idname = "custom.error_message"
+    bl_label = "MESSAGE BOX"
+    
+    def draw(self, context):
+        layout = self.layout
+        text = bpy.context.scene.errorText.split(',')
+        print(text)
+        boxLayout = layout.box()
+        for lines in text:
+            boxLayout.label(text=lines)
+
+    def execute(self, context):
+        return {'FINISHED'}
+
+    def invoke(self, context, event):
+        wm = context.window_manager
+        return wm.invoke_props_dialog(self)
+
+
+# Test call.
+# bpy.ops.object.dialog_operator('INVOKE_DEFAULT')

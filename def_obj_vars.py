@@ -29,7 +29,7 @@ Begin Map
          BlockRigidBody=True
          CreationTime=0
          CollisionComponent=StaticMeshComponent'StaticMeshComponent_{0}'
-         Name="{9}_{0}"
+         Name="{7}_{0}"
          ObjectArchetype=StaticMeshActor'Engine.Default__StaticMeshActor'
       End Actor
    End Level
@@ -60,16 +60,18 @@ boostLocList = [
  [[3072, 4096.0, 73.0], [[1 ,1, -8192], [-1, 1, 8192], [1, -1, -2732], [-1, -1, 2728]]], 
  [[3584.0, 0.0, 73.0], [[1 ,1, -16384], [-1, 1, 16384]]]
  ]
+ 
+boostScale = [1, 1, 1]
 
 boostFxString = """
 Begin Map
    Begin Level
-        Begin Actor Class=FXActor_TA Name=FXActor_Boost_TA_{0} Archetype=FXActor_TA'Park_P.pickup_boost.Boost{7}_FXActor'
-         Begin Object Class=ParameterDispenser_X Name=DefaultParameters_{0} ObjName=ParameterDispenser_X_{0} Archetype=ParameterDispenser_X'Park_P.pickup_boost.Boost{7}_FXActor:DefaultParameters'
+        Begin Actor Class=FXActor_TA Name=FXActor_Boost_TA_{0} Archetype=FXActor_TA'Park_P.pickup_boost.Boost{3}_FXActor'
+         Begin Object Class=ParameterDispenser_X Name=DefaultParameters_{0} ObjName=ParameterDispenser_X_{0} Archetype=ParameterDispenser_X'Park_P.pickup_boost.Boost{3}_FXActor:DefaultParameters'
             Name="ParameterDispenser_X_{0}"
-            ObjectArchetype=ParameterDispenser_X'Park_P.pickup_boost.Boost{7}_FXActor:DefaultParameters'
+            ObjectArchetype=ParameterDispenser_X'Park_P.pickup_boost.Boost{3}_FXActor:DefaultParameters'
          End Object
-         Begin Object Class=SpriteComponent Name=Sprite ObjName=SpriteComponent_29 Archetype=SpriteComponent'Park_P.pickup_boost.Boost{7}_FXActor:Sprite'
+         Begin Object Class=SpriteComponent Name=Sprite ObjName=SpriteComponent_29 Archetype=SpriteComponent'Park_P.pickup_boost.Boost{3}_FXActor:Sprite'
             Sprite=Texture2D'EditorResources.MatIcon_FX'
             SpriteCategoryName="FXActor"
             ReplacementPrimitive=None
@@ -79,17 +81,17 @@ Begin Map
             LightingChannels=(bInitialized=True,Dynamic=True)
             Scale=2.000000
             Name="SpriteComponent_{0}"
-            ObjectArchetype=SpriteComponent'Park_P.pickup_boost.Boost{7}_FXActor:Sprite'
+            ObjectArchetype=SpriteComponent'Park_P.pickup_boost.Boost{3}_FXActor:Sprite'
          End Object
          Parameters=ParameterDispenser_X'ParameterDispenser_X_{0}'
          Components(0)=SpriteComponent'SpriteComponent_{0}'
-         Location=(X={4},Y={5},Z={6})
-         Rotation=(Pitch={1},Yaw={2},Roll={3})
+         Location=(X={2[0]},Y={2[1]},Z={2[2]})
+         Rotation=(Pitch={1[0]},Yaw={1[1]},Roll={1[2]})
          bNoDelete=True
          Tag="Boost_Small"
          Layer="Field, Boost"
          Name="FXActor_Boost_TA_{0}"
-         ObjectArchetype=FXActor_TA'Park_P.pickup_boost.Boost{7}_FXActor'
+         ObjectArchetype=FXActor_TA'Park_P.pickup_boost.Boost{3}_FXActor'
         End Actor
    End Level
 End Map"""
@@ -124,9 +126,9 @@ Begin Map
          Components(0)=CylinderComponent'CylinderComponent_{0}'
          Components(1)=()
          Components(2)=SpriteComponent'SpriteComponent_{0}'
-         Location=(X={2},Y={3},Z={4})
-		 Rotation=(Pitch={5},Yaw={6},Roll={7})
-         Tag="{8}_VehiclePickup_Boost_TA_{0}"
+         Location=(X={2[0]},Y={2[1]},Z={2[2]})
+		 Rotation=(Pitch={3[0]},Yaw={3[1]},Roll={3[2]})
+         Tag="{4}_VehiclePickup_Boost_TA_{0}"
          CollisionComponent=CylinderComponent'CylinderComponent_{0}'
          Name="VehiclePickup_Boost_TA_{0}"
          ObjectArchetype=VehiclePickup_Boost_TA'Park_P.archetypes.vehiclepickup.VehiclePickup_Boost{1}'
@@ -170,8 +172,8 @@ Begin Level
      End Object
      Components(0)=SpriteComponent'SpriteComponent_{0}'
      Components(1)=ArrowComponent'ArrowComponent_2'
-     Location=(X={1},Y={2},Z={3})
-     Rotation=(Pitch={4},Yaw={5},Roll={6})
+     Location=(X={1[0]},Y={1[1]},Z={1[2]})
+     Rotation=(Pitch={2[0]},Yaw={2[1]},Roll={2[2]})
      DrawScale=1
      CreationTime=0
      Tag=PointInSpace_TA
@@ -245,6 +247,10 @@ defaultBluePointInSpaceRotation = [0, 49152, 0]
 defaultBlueTeamNumber = 0
 
 defaultBlueGoalLocation = [0.0, 5570.0, 320.0]
+
+goalRot = [0, 0, 0]
+
+goalScale = [1, 1, 1]
 
 # DEFAULT PROPERTIES OF ORANGE GOAL
 # -------------------------------------------------------------------------
@@ -387,8 +393,8 @@ Begin Map
          Components(2)=ArrowComponent'ArrowComponent_{0}'
          Components(3)=CylinderComponent'CylinderComponent_{0}'
          Components(4)=PathRenderingComponent'PathRenderingComponent_{0}'
-         Location=(X={1},Y={2},Z={3})
-		 Rotation=(Pitch={4},Yaw={5},Roll={6})
+         Location=(X={1[0]},Y={1[1]},Z={1[2]})
+		 Rotation=(Pitch={2[0]},Yaw={2[1]},Roll={2[2]})
          DrawScale=4.000000
          Base=StaticMeshActor'StaticMeshActor_5'
          Tag="PlayerStart_TA_{0}"

@@ -24,15 +24,7 @@ import os
 import sys
 import subprocess
 from collections import namedtuple
-from . import cust_obj_vars
-from . import def_obj_vars
-from . import def_obj_loop
-from . import make_instances_real
-from . import send_to_t3d
-from . import send_to_udk
-from . import set_parent
-from . import set_rotation
-from . import ui
+from . import cust_obj_vars, def_obj_vars, def_obj_loop, make_instances_real, send_to_t3d, send_to_udk, set_parent, set_rotation, ui
 
 
 bl_info = {
@@ -234,119 +226,37 @@ bl_info = {
         # layout.operator(RLMM_OT_install_dependencies.bl_idname, icon="CONSOLE")
 
 
-# class RLMMPJ_PT_Panel(bpy.types.Panel):
-    # bl_idname = "RLMMPJ_PT_Panel"
-    # bl_label = "Project Name"
-    # bl_category = "RLMM Toolkit"
-    # bl_space_type = "VIEW_3D"
-    # bl_region_type = "UI"
-    # bl_context = 'objectmode'
-
-# #create a panel (class) by deriving from the bpy Panel, this be the UI
-    # def draw(self, context):
-        
-        # layout = self.layout
-
-        # boxLayout1 = layout.box()
-        # boxLayout1.label(text="Project Name",icon='DESKTOP')
-        
-        # row1 = boxLayout1.row()
-        # row1.prop(context.scene, 'projectName')
-
-
-# class RLMM_PT_Panel(bpy.types.Panel):
-    # bl_idname = "RLMM_PT_Panel"
-    # bl_label = "Objects: Location/Rotation"
-    # bl_category = "RLMM Toolkit"
-    # bl_space_type = "VIEW_3D"
-    # bl_region_type = "UI"
-    # bl_context = 'objectmode'
-
-# #create a panel (class) by deriving from the bpy Panel, this be the UI
-    # def draw(self, context):
-        
-        # layout = self.layout
-
-        # boxLayout1 = layout.row().box()
-        # # ICON OBJECT_DATA IS THE SQUARE INSIDE THE SELECT BOX
-        # boxLayout1.label(text="Select Array Objects",icon='EYEDROPPER')   
-        # boxLayout1.prop_search(context.scene, "prefabOBJ", context.scene, "objects")
-        # boxLayout1.prop_search(context.scene, "prefabPLANE", context.scene, "objects")
-        
-        # boxLayout2 = layout.row().box()  
-        # boxLayout2.label(text="Object Instances",icon='LINKED')
-        # boxlayout7 = boxLayout2.box()
-        # boxlayout7.prop(context.scene, "scaleFACES")
-        # boxlayout7.operator('custom.set_parent', text="Set Parent/Scale")
-        # boxlayout7.operator('custom.make_instances_real', text="Make Instances Real")
-        
-        # boxLayout3 = layout.box()
-        # boxLayout3.label(text="Set Rotation",icon='ORIENTATION_LOCAL')
-        # boxlayout8 = boxLayout3.box()
-        # boxlayout8.prop(context.scene, "collectRotations")
-        
-        # subrow = boxlayout8.row(align=True)
-        # subrow.operator('custom.set_neg_x', text="-X")
-        # subrow.operator('custom.set_pos_x', text="+X")
-        # subrow.operator('custom.set_neg_y', text="-Y")
-        # subrow.operator('custom.set_pos_y', text="+Y")
-        # subrow.operator('custom.set_neg_z', text="-Z")
-        # subrow.operator('custom.set_pos_z', text="+Z")
-        
-        # boxLayout4 = layout.box()
-        # boxLayout4.label(text="Export Data",icon='EXPORT')
-        # boxlayout5 = boxLayout4.box()
-        # boxlayout5.prop(context.scene, "collectData")
-        # boxlayout5.prop(context.scene, "collectMaterials")
-        # boxlayout5.prop(context.scene, "physMat")
-        
-        # row3 = boxlayout5.row()
-        # row3.prop(context.scene, 'conf_path')
-        # row2 = boxlayout5.row()
-        # row2.operator('custom.send_to_udk', text="Send to UDK")
-        
-# class RLMMBrushes_PT_Panel(bpy.types.Panel):
-    # bl_idname = "RLMMBrushes_PT_Panel"
-    # bl_label = "Brushes"
-    # bl_category = "RLMM Toolkit"
-    # bl_space_type = "VIEW_3D"
-    # bl_region_type = "UI"
-    # bl_context = 'objectmode'
-
-# #create a panel (class) by deriving from the bpy Panel, this be the UI
-    # def draw(self, context):
-        
-        # layout = self.layout
-
-        # boxLayout9 = layout.box()
-        # boxLayout9.label(text="T3D File",icon='CUBE')
-        # boxLayout9.operator('custom.send_to_t3d', text="Create Custom Brush")
-
-
 # preference_classes = [RLMM_PT_warning_panel,
                       # RLMM_OT_install_dependencies,
                       # RLMM_preferences]
 
 modules = [cust_obj_vars,
-            def_obj_loop,
-            def_obj_vars,
-            make_instances_real,
-            send_to_t3d,
-            send_to_udk,
-            set_parent,
-            set_rotation,
-            ui]
+           def_obj_loop,
+           def_obj_vars,
+           make_instances_real,
+           send_to_t3d,
+           send_to_udk,
+           set_parent,
+           set_rotation,
+           ui]
 
-classes = [#set_rotation.set_rotation,
-           send_to_udk.sendToUDK,
+classes = [send_to_udk.sendToUDK,
            send_to_t3d.sendToT3d,
            def_obj_loop.defaultObjects,
            ui.RLMMPJ_PT_Panel,
            ui.RLMM_PT_Panel,
            ui.RLMMBRUSHES_PT_Panel,
            ui.UDKDEFAULT_PT_Panel,
+           ui.errorMessage,
            set_parent.setParent,
-           make_instances_real.makeInstancesReal]
+           make_instances_real.makeInstancesReal,
+           set_rotation.setRotation,
+           set_rotation.setNegX,
+           set_rotation.setPosX,
+           set_rotation.setNegY,
+           set_rotation.setPosY,
+           set_rotation.setNegZ,
+           set_rotation.setPosZ]
 
 #this function is called on plugin loading(installing), adding class definitions into blender
 #to be used, drawed and called
@@ -356,6 +266,9 @@ def register():
     
     for module in modules:
         importlib.reload(module)
+        
+    for cls in classes:
+        bpy.utils.register_class(cls)
 
     # for cls in preference_classes:
         # bpy.utils.register_class(cls)
@@ -368,27 +281,30 @@ def register():
     # # Don't register other panels, operators etc.
         # return
 
-    #register the classes with the correct function
-    bpy.types.Scene.collectionHolder = bpy.props.StringProperty(name="", default = "", description = "")
-    bpy.types.Scene.projectName = bpy.props.StringProperty(name="UDK", default = "", description = "Select the UDK file you're currently working on.", subtype='FILE_PATH')
-    bpy.types.Scene.textT3d = bpy.props.StringProperty(name="", default = "", description = "")
-    bpy.types.Scene.prefabOBJ = bpy.props.PointerProperty(name="Object", type=bpy.types.Object)
-    bpy.types.Scene.prefabPLANE = bpy.props.PointerProperty(name="Plane", type=bpy.types.Object)
-    bpy.types.Scene.scaleFACES = bpy.props.BoolProperty(name="Scale Prefab To Plane")
+    # REGISTER THE GLOBAL VARIABLES FOR THE ADDON
+    bpy.types.Scene.collectionHolder = bpy.props.StringProperty(name="", default = "", description = "") # CONTAINER FOR TEMPORARILY STORING OBJECTS IN A COLLECTION
+    bpy.types.Scene.projectName = bpy.props.StringProperty(name="UDK", default = "", description = "Select the UDK file you're currently working on.", subtype='FILE_PATH') # NAME OF UDK FILE
+    bpy.types.Scene.textT3d = bpy.props.StringProperty(name="", default = "", description = "") # CONTAINER FOR STORING T3D STRING
+    bpy.types.Scene.prefabOBJ = bpy.props.PointerProperty(name="Object", type=bpy.types.Object) # SELECTOR FOR OBJ YOU WANT TO MANIPULATE
+    bpy.types.Scene.prefabPLANE = bpy.props.PointerProperty(name="Plane", type=bpy.types.Object) # SELECTOR FOR THE PARENT OF THAT OBJ
+    bpy.types.Scene.scaleFACES = bpy.props.BoolProperty(name="Scale Prefab To Plane") # UI BOOLEAN FOR SCALING THE OBJ TO PARENT
     bpy.types.Scene.collectRotations = bpy.props.BoolProperty(name="Auto Collect Objects", default=True)
-    bpy.types.Scene.collectData = bpy.props.BoolProperty(name="Auto Collect Objects", default=True)
-    bpy.types.Scene.collectMaterials = bpy.props.BoolProperty(name="Collect Materials", default=True)
-    bpy.types.Scene.collectT3d = bpy.props.BoolProperty(name="Auto Collect Objects", default=True)
-    bpy.types.Scene.physMat = bpy.props.BoolProperty(name="Apply StickyWalls", default=True)
-    bpy.types.Scene.defPillar = bpy.props.BoolProperty(name="Default Pillar", default=True)
-    bpy.types.Scene.defGoals = bpy.props.BoolProperty(name="Default Goals", default=True)
-    bpy.types.Scene.defSpawns = bpy.props.BoolProperty(name="Default Spawns", default=True)
-    bpy.types.Scene.defBoost = bpy.props.BoolProperty(name="Default Boost", default=True)
-    bpy.types.Scene.conf_path = bpy.props.StringProperty(name="CSV", default = "", description = "Define export directory for CSV file", subtype='FILE_PATH')
-    bpy.types.Scene.numberSequencer = bpy.props.IntProperty(name="", default=0, min=0, max=1000000000)
-
-    for cls in classes:
-        bpy.utils.register_class(cls)
+    bpy.types.Scene.collectData = bpy.props.BoolProperty(name="Auto Collect Objects", default=True) # UI BOOLEAN TO COLLECT THE OBJECTS INSIDE THE ADDON CREATED COLLECTION
+    bpy.types.Scene.collectMaterials = bpy.props.BoolProperty(name="Collect Materials", default=True) # UI BOOLEAN TO COLLECT THE MATERIALS ON THE OBJ
+    bpy.types.Scene.collectT3d = bpy.props.BoolProperty(name="Auto Collect Objects", default=True) # UI BOOLEAN TO COLLECT THE OBJECTS INSIDE THE ADDON CREATED COLLECTION
+    bpy.types.Scene.physMat = bpy.props.BoolProperty(name="Apply StickyWalls", default=True) # UI BOOLEAN TO APPLY PHYS MATERIAL TO EXPORTED OBJ
+    bpy.types.Scene.defPillar = bpy.props.BoolProperty(name="Default Pillar", default=True) # UI BOOLEAN TO MAKE PILLAR
+    bpy.types.Scene.defGoals = bpy.props.BoolProperty(name="Default Goals", default=True) # UI BOOLEAN TO MAKE GOALS
+    bpy.types.Scene.defSpawns = bpy.props.BoolProperty(name="Default Spawns", default=True) # UI BOOLEAN TO MAKE SPAWNS
+    bpy.types.Scene.defBoost = bpy.props.BoolProperty(name="Default Boost", default=True) # UI BOOLEAN TO MAKE BOOST
+    bpy.types.Scene.conf_path = bpy.props.StringProperty(name="CSV", default = "", description = "Define export directory for CSV file", subtype='FILE_PATH') # SELECTED PATH TO PLACE EXPORTED UDK AND T3D DATA
+    bpy.types.Scene.numberSequencer = bpy.props.IntProperty(name="", default=0, min=0, max=1000000000) # INT PROPERTIED FOR HOLDING NUMERIC VALUE OF CREATED OBJECTS
+    bpy.types.Scene.value = bpy.props.IntProperty(name="", default=0, min=-90, max=90) # INT PROPERTY FOR SETTING ROTATIONS
+    bpy.types.Scene.axis = bpy.props.StringProperty(name="", default = "", description = "") # STRING PROPERTY FOR SETTING ROTATIONS
+    bpy.types.Scene.xBool = bpy.props.BoolProperty(name="") # BOOLEAN PROPERTY FOR SETTING ROTATIONS
+    bpy.types.Scene.yBool = bpy.props.BoolProperty(name="") # BOOLEAN PROPERTY FOR SETTING ROTATIONS
+    bpy.types.Scene.zBool = bpy.props.BoolProperty(name="") # BOOLEAN PROPERTY FOR SETTING ROTATIONS
+    bpy.types.Scene.errorText = bpy.props.StringProperty(name="errorText", default = "", description = "") # Variable to pass messages
 
 
 #same as register but backwards, deleting references
@@ -400,8 +316,9 @@ def unregister():
     # if dependencies_installed:
         # for cls in classes:
             # bpy.utils.unregister_class(cls)
+    
             
-    for cls in classes:
+    for cls in reversed(classes):
         bpy.utils.unregister_class(cls)
 
 #NOTE: during testing if this addon was installed from a file then that current version

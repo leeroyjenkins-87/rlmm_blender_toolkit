@@ -20,16 +20,10 @@ import bpy
 from mathutils import Matrix, Vector
 from math import degrees, radians, pi
 
-class set_rotation(bpy.types.Operator):
-    def __init__(self, idname: str, label: str, description: str,
-                 value: int, axis: str):
-
-        bl_idname = idname
-        bl_label = label
-        bl_description = description
-
-        self.value = value
-        self.axis = axis
+class setRotation(bpy.types.Operator):
+    bl_idname = "custom.set_rotation"
+    bl_label = "Set Object Rotation"
+    bl_description = "Change Local Rotation"
 
     @classmethod
     def poll(cls, context):
@@ -46,7 +40,7 @@ class set_rotation(bpy.types.Operator):
             selectedObj.select_set(False)
 
         loopCount = 0
-
+        
         while loopCount < objCount:
 
             if bpy.context.scene.collectRotations == True:
@@ -57,16 +51,24 @@ class set_rotation(bpy.types.Operator):
             obj.select_set(True)
 
             bpy.context.view_layer.objects.active = obj
+          
+           
+            bpy.ops.transform.rotate(value=radians(bpy.context.scene.value),
+									 orient_axis=bpy.context.scene.axis,
+									 orient_type='LOCAL',
+									 orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)),
+									 orient_matrix_type='LOCAL',
+									 constraint_axis=(bpy.context.scene.xBool, bpy.context.scene.yBool, bpy.context.scene.zBool),
+									 mirror=True,
+									 use_proportional_edit=False,
+									 proportional_edit_falloff='SMOOTH',
+									 proportional_size=1,
+									 use_proportional_connected=False,
+									 use_proportional_projected=False,
+									 release_confirm=True)
 
-            bpy.ops.transform.rotate(value=radians(self.value), orient_axis=self.axis, orient_type='LOCAL',
-                                     orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)), orient_matrix_type='LOCAL',
-                                     constraint_axis=(False, False, True), mirror=True, use_proportional_edit=False,
-                                     proportional_edit_falloff='SMOOTH', proportional_size=1,
-                                     use_proportional_connected=False, use_proportional_projected=False,
-                                     release_confirm=True)
-
-            for idx, rot in enumerate(obj.rotation_euler):
-                obj.rotation_euler[idx] = degrees(rot) % 360
+            # for idx, rot in enumerate(obj.rotation_euler):
+                # obj.rotation_euler[idx] = degrees(rot) % 360
 
             obj.select_set(False)
 
@@ -81,48 +83,137 @@ class set_rotation(bpy.types.Operator):
         return {'FINISHED'}
 
 
-class setPosX(set_rotation):
-    def __init__(self):
-        super().__init__(idname="custom.set_pos_x",
-                         label="Set Positive X Rotation",
-                         description="Change Local Rotation",
-                         value=90, axis='X')
+class setPosX(bpy.types.Operator):
+    bl_idname = "custom.set_pos_x"
+    bl_label = "Set Positive X Rotation"
+    bl_description = "Change Local Rotation"
+
+    @classmethod
+    def poll(cls, context):
+        return context.selected_objects is not None
+
+    def execute(self, context):
+
+        bpy.context.scene.value = 90
+        bpy.context.scene.axis = 'X'
+        bpy.context.scene.xBool = True
+        bpy.context.scene.yBool = False
+        bpy.context.scene.zBool = False
+        
+        
+        bpy.ops.custom.set_rotation()
+         
+        return {'FINISHED'}
 
 
-class setNegX(set_rotation):
-    def __init__(self):
-        super().__init__(idname="custom.set_neg_x",
-                         label="Set Negative X Rotation",
-                         description="Change Local Rotation",
-                         value=-90, axis='X')
+class setNegX(bpy.types.Operator):
+    bl_idname = "custom.set_neg_x"
+    bl_label = "Set Negative X Rotation"
+    bl_description = "Change Local Rotation"
+
+    # @classmethod
+    # def poll(cls, context):
+        # return context.selected_objects is not None
+
+    def execute(self, context):
+
+        bpy.context.scene.value = -90
+        bpy.context.scene.axis = 'X'
+        bpy.context.scene.xBool = True
+        bpy.context.scene.yBool = False
+        bpy.context.scene.zBool = False
+        
+        
+        bpy.ops.custom.set_rotation()
+         
+        return {'FINISHED'}
 
 
-class setPosY(set_rotation):
-    def __init__(self):
-        super().__init__(idname="custom.set_pos_y",
-                         label="Set Positive Y Rotation",
-                         description="Change Local Rotation",
-                         value=90, axis='Y')
+class setPosY(bpy.types.Operator):
+    bl_idname = "custom.set_pos_y"
+    bl_label = "Set Positive Y Rotation"
+    bl_description = "Change Local Rotation"
+
+    @classmethod
+    def poll(cls, context):
+        return context.selected_objects is not None
+
+    def execute(self, context):
+
+        bpy.context.scene.value = 90
+        bpy.context.scene.axis = 'Y'
+        bpy.context.scene.xBool = False
+        bpy.context.scene.yBool = True
+        bpy.context.scene.zBool = False
+        
+        
+        bpy.ops.custom.set_rotation()
+         
+        return {'FINISHED'}
 
 
-class setNegY(set_rotation):
-    def __init__(self):
-        super().__init__(idname="custom.set_neg_y",
-                         label="Set Negative Y Rotation",
-                         description="Change Local Rotation",
-                         value=-90, axis='Y')
+class setNegY(bpy.types.Operator):
+    bl_idname = "custom.set_neg_y"
+    bl_label = "Set Negative Y Rotation"
+    bl_description = "Change Local Rotation"
 
-class setPosZ(set_rotation):
-    def __init__(self):
-        super().__init__(idname="custom.set_pos_z",
-                         label="Set Positive Z Rotation",
-                         description="Change Local Rotation",
-                         value=90, axis='Z')
+    @classmethod
+    def poll(cls, context):
+        return context.selected_objects is not None
 
+    def execute(self, context):
 
-class setNegZ(set_rotation):
-    def __init__(self):
-        super().__init__(idname="custom.set_neg_z",
-                         label="Set Negative Z Rotation",
-                         description="Change Local Rotation",
-                         value=-90, axis='Z')
+        bpy.context.scene.value = -90
+        bpy.context.scene.axis = 'Y'
+        bpy.context.scene.xBool = False
+        bpy.context.scene.yBool = True
+        bpy.context.scene.zBool = False
+        
+        
+        bpy.ops.custom.set_rotation()
+        
+        return {'FINISHED'}
+
+class setPosZ(bpy.types.Operator):
+    bl_idname = "custom.set_pos_z"
+    bl_label = "Set Positive Z Rotation"
+    bl_description = "Change Local Rotation"
+
+    @classmethod
+    def poll(cls, context):
+        return context.selected_objects is not None
+
+    def execute(self, context):
+
+        bpy.context.scene.value = 90
+        bpy.context.scene.axis = 'Z'
+        bpy.context.scene.xBool = False
+        bpy.context.scene.yBool = False
+        bpy.context.scene.zBool = True
+        
+        
+        bpy.ops.custom.set_rotation()
+    
+        return {'FINISHED'}
+
+class setNegZ(bpy.types.Operator):
+    bl_idname = "custom.set_neg_z"
+    bl_label = "Set Negative Z Rotation"
+    bl_description = "Change Local Rotation"
+
+    @classmethod
+    def poll(cls, context):
+        return context.selected_objects is not None
+
+    def execute(self, context):
+
+        bpy.context.scene.value = -90
+        bpy.context.scene.axis = 'Z'
+        bpy.context.scene.xBool = False
+        bpy.context.scene.yBool = False
+        bpy.context.scene.zBool = True
+        
+        
+        bpy.ops.custom.set_rotation()
+        
+        return {'FINISHED'}

@@ -13,9 +13,7 @@ class defaultObjects(bpy.types.Operator):
         return context.selected_objects is not None
     
     def execute(self, context):
-        
-        num = str(bpy.context.scene.numberSequencer).zfill(10)
-        
+
         outputFile = '{}{}'.format(bpy.path.abspath(bpy.context.scene.conf_path), "udkDefaultObjects.csv")
         textDefUDK = ""
 
@@ -35,15 +33,17 @@ class defaultObjects(bpy.types.Operator):
                 
                 pointRot = defCurrentGoal[1]
                 
-                textDefUDK += pointString.format(num, pointLoc[0], pointLoc[1], pointLoc[2], pointRot[0], pointRot[1], pointRot[2])
+                textDefUDK += pointString.format(str(bpy.context.scene.numberSequencer).zfill(10), pointLoc, pointRot)
                 
                 goalLoc = defCurrentGoal[3]
                 
-                textDefUDK += goalString.format(num, defCurrentGoal[2], defaultGoalT3d, goalLoc[0], goalLoc[1], goalLoc[2], '0', '0', '0')
-                    
-                num += 1
+                teamNum = defCurrentGoal[2]
                 
-                goalCreatedList.append(f"""GoalVolume_TA_{num}""")
+                textDefUDK += goalString.format(str(bpy.context.scene.numberSequencer).zfill(10), teamNum, defaultGoalT3d, goalLoc, goalRot, goalScale, 'GoalVolume')
+  
+                bpy.context.scene.numberSequencer += 1
+                
+                goalCreatedList.append("""GoalVolume_TA_{}""".format(str(bpy.context.scene.numberSequencer).zfill(10)))
             
         if bpy.context.scene.defSpawns == True:
 
@@ -56,17 +56,17 @@ class defaultObjects(bpy.types.Operator):
                 playerLoc = defCurrentSpawn[0]
                 playerRot = defCurrentSpawn[1]
             
-                textDefUDK += playerString.format(num, playerLoc[0], playerLoc[1], playerLoc[2], playerRot[0], playerRot[1], playerRot[2])
+                textDefUDK += playerString.format(str(bpy.context.scene.numberSequencer).zfill(10), playerLoc, playerRot)
                 
-                num += 1
+                bpy.context.scene.numberSequencer += 1
                 
-                playerCreatedList.append(f"""PlayerStart_TA_{num}""")
+                playerCreatedList.append("""PlayerStart_TA_{}""".format(str(bpy.context.scene.numberSequencer).zfill(10)))
 
         if bpy.context.scene.defPillar == True:
             
-            textDefUDK += pillarString.format(num, goalCreatedList, playerCreatedList)
+            textDefUDK += pillarString.format(str(bpy.context.scene.numberSequencer).zfill(10), goalCreatedList, playerCreatedList)
 
-            num += 1
+            bpy.context.scene.numberSequencer += 1
             
         if bpy.context.scene.defBoost == True:
 
@@ -78,29 +78,44 @@ class defaultObjects(bpy.types.Operator):
                 
                     if boostDupeLoc[2] == 70.0:
                     
-                        textDefUDK += boostFxString.format(num, '0', boostDupe[2], '0', boostDupeLoc[0] * boostDupe[0], boostDupeLoc[1] * boostDupe[1], boostDupeLoc[2] - 64, 'Pad')
+                        rotList = [0, boostDupe[2], 0]
                         
-                        textDefUDK += boostPickupString.format(num, 'Pad', boostDupeLoc[0] * boostDupe[0], boostDupeLoc[1] * boostDupe[1], boostDupeLoc[2], '0', boostDupe[2], '0', 'Small')
+                        locList = [boostDupeLoc[0] * boostDupe[0], boostDupeLoc[1] * boostDupe[1], boostDupeLoc[2] - 64]
+                    
+                        textDefUDK += boostFxString.format(str(bpy.context.scene.numberSequencer).zfill(10), rotList, locList, 'Pad')
                         
-                        num += 1
+                        locList = [boostDupeLoc[0] * boostDupe[0], boostDupeLoc[1] * boostDupe[1], boostDupeLoc[2]]
+                        
+                        textDefUDK += boostPickupString.format(str(bpy.context.scene.numberSequencer).zfill(10), 'Pad', locList, rotList, 'Small')
+                        
+                        bpy.context.scene.numberSequencer += 1
                         
                     else:
+                        rotList = [0, boostDupe[2], 0]
+                        
+                        locList = [boostDupeLoc[0] * boostDupe[0], boostDupeLoc[1] * boostDupe[1], boostDupeLoc[2] - 69]
                     
-                        textDefUDK += boostFxString.format(num, '0', boostDupe[2], '0', boostDupeLoc[0] * boostDupe[0], boostDupeLoc[1] * boostDupe[1], boostDupeLoc[2] - 69, 'Pill')
+                        textDefUDK += boostFxString.format(str(bpy.context.scene.numberSequencer).zfill(10), rotList, locList, 'Pill')
                         
-                        textDefUDK += boostPickupString.format(num, 'Pill', boostDupeLoc[0] * boostDupe[0], boostDupeLoc[1] * boostDupe[1], boostDupeLoc[2], '0', boostDupe[2], '0', 'Large')
+                        locList = [boostDupeLoc[0] * boostDupe[0], boostDupeLoc[1] * boostDupe[1], boostDupeLoc[2]]
                         
-                        textDefUDK += staticMeshString.format(num, str(boostLgMesh).rstrip("']").lstrip("['"), boostLgMaterials, '', boostDupeLoc[0] * boostDupe[0], boostDupeLoc[1] * boostDupe[1], boostDupeLoc[2] - 66, '0', boostDupe[2], '0', '1.0', '1.0', '1.0', 'LargeBoostMesh', 'Field,Boost', 'LargeBoost')
+                        textDefUDK += boostPickupString.format(str(bpy.context.scene.numberSequencer).zfill(10), 'Pill', locList, rotList, 'Large')
+                        
+                        locList = [boostDupeLoc[0] * boostDupe[0], boostDupeLoc[1] * boostDupe[1], boostDupeLoc[2] - 66]
+                        
+                        textDefUDK += staticMeshString.format(str(bpy.context.scene.numberSequencer).zfill(10), str(boostLgMesh).rstrip("']").lstrip("['"), boostLgMaterials, '', locList, rotList, boostScale, 'LargeBoostMesh', 'Field,Boost', 'LargeBoost')
 
-                        num += 1
+                        bpy.context.scene.numberSequencer += 1
             
             for boostSmMesh in boostSmStaticLoc:
             
                 boostSmLoc = boostSmMesh[0]
+                
+                rotList = [0, 0, 0]
 
-                textDefUDK += staticMeshString.format(num, str(boostSmMesh[1]).rstrip("']").lstrip("['"), boostSmMaterials, '', boostSmLoc[0], boostSmLoc[1], boostSmLoc[2], '0.0', '0.0', '0.0', '1.0', '1.0', '1.0', 'SmallBoostMesh', 'Field,Boost', 'SmallBoost')
+                textDefUDK += staticMeshString.format(str(bpy.context.scene.numberSequencer).zfill(10), str(boostSmMesh[1]).rstrip("']").lstrip("['"), boostSmMaterials, '', boostSmLoc, rotList, boostScale, 'SmallBoostMesh', 'Field,Boost', 'SmallBoost')
 
-                num += 1
+                bpy.context.scene.numberSequencer += 1
     
     
         f = open( outputFile, 'w' )

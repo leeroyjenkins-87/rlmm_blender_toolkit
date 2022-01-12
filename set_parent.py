@@ -32,17 +32,22 @@ class setParent(bpy.types.Operator):
 
         dupeOBJ = bpy.context.scene.prefabOBJ
         dupePLANE = bpy.context.scene.prefabPLANE
-
-        # PARENT OBJECT TO PLANE
-        dupeOBJ.parent = dupePLANE
-
-        #Does the User want the object to scale? If yes then.
-        if bpy.context.scene.scaleFACES == True:
-            dupePLANE.use_instance_faces_scale = True
+        
+        if dupeOBJ is None or dupePLANE is None:
+            bpy.context.scene.errorText = """NO PARENT/CHILD SELECTED"""
+            bpy.ops.custom.error_message('INVOKE_DEFAULT')
+        
         else:
-            dupePLANE.use_instance_faces_scale = False
+            # PARENT OBJECT TO PLANE
+            dupeOBJ.parent = dupePLANE
 
-        # SET INSTANCING TO FACES ON PARENT
-        dupePLANE.instance_type = 'FACES'
+            #Does the User want the object to scale? If yes then.
+            if bpy.context.scene.scaleFACES == True:
+                dupePLANE.use_instance_faces_scale = True
+            else:
+                dupePLANE.use_instance_faces_scale = False
+
+            # SET INSTANCING TO FACES ON PARENT
+            dupePLANE.instance_type = 'FACES'
 
         return {'FINISHED'}
