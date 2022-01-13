@@ -29,38 +29,49 @@ class makeInstancesReal(bpy.types.Operator):
         return context.selected_objects is not None
 
     def execute(self, context):
+    
+    # if parent does not have child
+        if bpy.context.scene.prefabPLANE == None:
+            bpy.context.scene.errorCode = 4
+            bpy.ops.custom.error_message('INVOKE_DEFAULT') 
+            
+        elif len(bpy.context.scene.prefabPLANE.children) < 1:
+            bpy.context.scene.errorCode = 4
+            bpy.ops.custom.error_message('INVOKE_DEFAULT') 
+            
+        else:
+        
+            for selectedOBJ in bpy.data.objects:
+                selectedOBJ.select_set(False)
 
-        for selectedOBJ in bpy.data.objects:
-            selectedOBJ.select_set(False)
+            dupePLANE = bpy.context.scene.prefabPLANE
 
-        dupePLANE = bpy.context.scene.prefabPLANE
+            prefabCollection = bpy.context.scene.prefabPLANE.users_collection[0]
 
-        prefabCollection = bpy.context.scene.prefabPLANE.users_collection[0]
+            dupePLANE.select_set(True)
 
-        dupePLANE.select_set(True)
+            bpy.context.view_layer.objects.active = dupePLANE
 
-        bpy.context.view_layer.objects.active = dupePLANE
+            bpy.ops.object.duplicates_make_real()
 
-        bpy.ops.object.duplicates_make_real()
+            udkCollection = bpy.data.collections.new('UDK Collection')
 
-        udkCollection = bpy.data.collections.new('UDK Collection')
+            bpy.context.scene.collection.children.link(udkCollection)
 
-        bpy.context.scene.collection.children.link(udkCollection)
+            objCollection = bpy.data.collections.new(str(bpy.context.scene.prefabOBJ.users_collection[0].name).rstrip('.123456789'))
 
-        objCollection = bpy.data.collections.new(str(bpy.context.scene.prefabOBJ.users_collection[0].name).rstrip('.123456789'))
+            bpy.context.scene.collection.children['UDK Collection'].children.link(objCollection)
 
-        bpy.context.scene.collection.children['UDK Collection'].children.link(objCollection)
+            bpy.context.scene.collectionHolder = "{}".format(str(objCollection.name))
 
-        bpy.context.scene.collectionHolder = "{}".format(str(objCollection.name))
+            for obj in bpy.context.selected_objects:
+                if obj.type != 'MESH':
+                    continue
 
-        for obj in bpy.context.selected_objects:
-            if obj.type != 'MESH':
-                continue
+                prefabCollection.objects.unlink(obj)
 
-            prefabCollection.objects.unlink(obj)
+                objCollection.objects.link(obj)
 
-            objCollection.objects.link(obj)
-
-            obj.name = bpy.context.scene['prefabOBJ'].name
+                obj.name = bpy.context.scene['prefabOBJ'].name
 
         return {'FINISHED'}

@@ -132,13 +132,22 @@ class UDKDEFAULT_PT_Panel(bpy.types.Panel):
 
 class errorMessage(bpy.types.Operator):
     bl_idname = "custom.error_message"
-    bl_label = "MESSAGE BOX"
+    bl_label = "MESSAGE BOX"                   
     
     def draw(self, context):
+    
+        errorCodeList = ['"UDK Collection" HAS NOT BEEN CREATED,REMOVE "Auto Collect" OR,RUN "Make Instances Real"',
+                     'NO OBJECTS SELECTED',
+                     'NO PARENT/CHILD SELECTED',
+                     'UDK PROJECT NAME IS MISSING,GO TO "Set Directories",GO TO "UDK",CLICK THE FOLDER ICON,NAVIGATE TO YOUR UDK PROJECT AND SELECT IT',
+                     '"Parent/Scale" HAS NOT BEEN SET']
+                     
         layout = self.layout
-        text = bpy.context.scene.errorText.split(',')
-        print(text)
+        
+        text = errorCodeList[bpy.context.scene.errorCode].split(',')
+
         boxLayout = layout.box()
+        
         for lines in text:
             boxLayout.label(text=lines)
 

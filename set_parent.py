@@ -34,7 +34,7 @@ class setParent(bpy.types.Operator):
         dupePLANE = bpy.context.scene.prefabPLANE
         
         if dupeOBJ is None or dupePLANE is None:
-            bpy.context.scene.errorText = """NO PARENT/CHILD SELECTED"""
+            bpy.context.scene.errorCode = 2
             bpy.ops.custom.error_message('INVOKE_DEFAULT')
         
         else:

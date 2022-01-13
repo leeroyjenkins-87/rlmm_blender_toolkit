@@ -1,14 +1,26 @@
+# ##### BEGIN GPL LICENSE BLOCK #####
+#
+#  This program is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU General Public License
+#  as published by the Free Software Foundation; either version 2
+#  of the License, or (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software Foundation,
+#  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+#
+# ##### END GPL LICENSE BLOCK #####
+
 import bpy
-# Don't think i need bmesh
-#import bmesh 
 import pyperclip
-# Don't think i need Mathutils or pi
-#from mathutils import Matrix, Vector
-# Don't think i need radians or pi
 from math import degrees#, radians, pi
 from .def_obj_vars import *
 from .cust_obj_vars import *
-from .ui import errorMessage
 
 class sendToUDK(bpy.types.Operator):
     bl_idname = "custom.send_to_udk"
@@ -30,19 +42,17 @@ class sendToUDK(bpy.types.Operator):
                 objCount = len(bpy.data.collections[bpy.context.scene.collectionHolder].objects[:])
                 self.runSend(objCount, objHolder)
             else:
-                bpy.context.scene.errorText = """'UDK Collection' HAS NOT BEEN CREATED,REMOVE "Auto Collect" OR,RUN "Make Instances Real" """
+                bpy.context.scene.errorCode = 2
                 bpy.ops.custom.error_message('INVOKE_DEFAULT')                
         else:
             if len(bpy.context.selected_objects) < 1:
-                bpy.context.scene.errorText = """NO OBJECTS SELECTED"""
+                bpy.context.scene.errorCode = 1
                 bpy.ops.custom.error_message('INVOKE_DEFAULT')
             else:
                 objHolder = bpy.context.selected_objects
                 objCount = len(bpy.context.selected_objects[:])
                 self.runSend(objCount, objHolder)
             
-        # objHolder = bpy.context.selected_objects
-        # objCount = len(bpy.context.selected_objects[:])
         return{'FINISHED'}
         
     def runSend(self, inVar1, inVar2):
@@ -64,7 +74,6 @@ class sendToUDK(bpy.types.Operator):
                 obj = bpy.data.collections[bpy.context.scene.collectionHolder].objects[loopCount]
             else:
                 obj = objHolder[loopCount]
-            # obj = objHolder[loopCount]
         
             obj.select_set(True)
             
@@ -96,7 +105,7 @@ class sendToUDK(bpy.types.Operator):
             # --------------------------------------------------------------------
             
             if bpy.context.scene.projectName == '':
-                bpy.context.scene.errorText = """UDK PROJECT NAME IS MISSING,GO TO "Set Directories",GO TO "UDK",CLICK THE FOLDER ICON,NAVIGATE TO YOUR UDK PROJECT AND SELECT IT"""
+                bpy.context.scene.errorCode = 3
                 bpy.ops.custom.error_message('INVOKE_DEFAULT')
 
             else:
@@ -125,7 +134,6 @@ class sendToUDK(bpy.types.Operator):
                 # LAYER
                 # --------------------------------------------------------------------
                 
-                #looks like it should be str(obj.users_collection[0].name).rstrip(".0123456789")
                 layerString = str(obj.users_collection[0].name.rstrip(".0123456789"))
                 
                 # TAG
