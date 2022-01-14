@@ -213,8 +213,9 @@ class RLMM_OT_install_dependencies(bpy.types.Operator):
         dependencies_installed = True
         
         # Register the panels, operators, etc. since dependencies are installed
-        bpy.utils.register_class(finishRegister)
-        bpy.ops.rlmm.finish_register()
+        # bpy.utils.register_class(finishRegister)
+        # bpy.ops.rlmm.finish_register()
+        finishRegister()
 
         return {"FINISHED"}
 
@@ -230,15 +231,11 @@ class RLMM_preferences(bpy.types.AddonPreferences):
 preference_classes = [RLMM_PT_warning_panel,
                       RLMM_OT_install_dependencies,
                       RLMM_preferences]
+                      
+def finishRegister():
 
-class finishRegister(bpy.types.Operator):
-    bl_idname = "rlmm.finish_register"
-    bl_label = "finish registering classes"
-    bl_description = ("finish registering classes")
-    bl_options = {"REGISTER", "INTERNAL"}
+    if dependencies_installed == True:
     
-    def execute(self, context):
-
         from . import cust_obj_vars, def_obj_vars, def_obj_loop, make_instances_real, send_to_t3d, send_to_udk, set_parent, set_rotation, ui
 
         classes = [send_to_udk.sendToUDK,
@@ -286,8 +283,67 @@ class finishRegister(bpy.types.Operator):
         bpy.types.Scene.yBool = bpy.props.BoolProperty(name="") # BOOLEAN PROPERTY FOR SETTING ROTATIONS
         bpy.types.Scene.zBool = bpy.props.BoolProperty(name="") # BOOLEAN PROPERTY FOR SETTING ROTATIONS
         bpy.types.Scene.errorCode = bpy.props.IntProperty(name="ErrorCode", default=0, min=0, max=90)
+    
+    return
+    
+
+# class finishRegister(bpy.types.Operator):
+    # bl_idname = "rlmm.finish_register"
+    # bl_label = "finish registering classes"
+    # bl_description = ("finish registering classes")
+    # bl_options = {"REGISTER", "INTERNAL"}
+    
+    # def execute(self, context):
+
+        # from . import cust_obj_vars, def_obj_vars, def_obj_loop, make_instances_real, send_to_t3d, send_to_udk, set_parent, set_rotation, ui
+
+        # classes = [send_to_udk.sendToUDK,
+                   # send_to_t3d.sendToT3d,
+                   # def_obj_loop.defaultObjects,
+                   # ui.RLMMPJ_PT_Panel,
+                   # ui.RLMM_PT_Panel,
+                   # ui.RLMMBRUSHES_PT_Panel,
+                   # ui.UDKDEFAULT_PT_Panel,
+                   # ui.errorMessage,
+                   # set_parent.setParent,
+                   # make_instances_real.makeInstancesReal,
+                   # set_rotation.errorCheckRotation,
+                   # set_rotation.setNegX,
+                   # set_rotation.setPosX,
+                   # set_rotation.setNegY,
+                   # set_rotation.setPosY,
+                   # set_rotation.setNegZ,
+                   # set_rotation.setPosZ]
         
-        return {'FINISHED'}
+        # for cls in classes:
+            # bpy.utils.register_class(cls)
+
+        # # REGISTER THE GLOBAL VARIABLES FOR THE ADDON
+        # bpy.types.Scene.collectionHolder = bpy.props.StringProperty(name="", default = "", description = "") # CONTAINER FOR TEMPORARILY STORING OBJECTS IN A COLLECTION
+        # bpy.types.Scene.projectName = bpy.props.StringProperty(name="UDK", default = "", description = "Select the UDK file you're currently working on.", subtype='FILE_PATH') # NAME OF UDK FILE
+        # bpy.types.Scene.textT3d = bpy.props.StringProperty(name="", default = "", description = "") # CONTAINER FOR STORING T3D STRING
+        # bpy.types.Scene.prefabOBJ = bpy.props.PointerProperty(name="Object", type=bpy.types.Object) # SELECTOR FOR OBJ YOU WANT TO MANIPULATE
+        # bpy.types.Scene.prefabPLANE = bpy.props.PointerProperty(name="Plane", type=bpy.types.Object) # SELECTOR FOR THE PARENT OF THAT OBJ
+        # bpy.types.Scene.scaleFACES = bpy.props.BoolProperty(name="Scale Prefab To Plane") # UI BOOLEAN FOR SCALING THE OBJ TO PARENT
+        # bpy.types.Scene.collectRotations = bpy.props.BoolProperty(name="Auto Collect Objects", default=True)
+        # bpy.types.Scene.collectData = bpy.props.BoolProperty(name="Auto Collect Objects", default=True) # UI BOOLEAN TO COLLECT THE OBJECTS INSIDE THE ADDON CREATED COLLECTION
+        # bpy.types.Scene.collectMaterials = bpy.props.BoolProperty(name="Collect Materials", default=True) # UI BOOLEAN TO COLLECT THE MATERIALS ON THE OBJ
+        # bpy.types.Scene.collectT3d = bpy.props.BoolProperty(name="Auto Collect Objects", default=True) # UI BOOLEAN TO COLLECT THE OBJECTS INSIDE THE ADDON CREATED COLLECTION
+        # bpy.types.Scene.physMat = bpy.props.BoolProperty(name="Apply StickyWalls", default=True) # UI BOOLEAN TO APPLY PHYS MATERIAL TO EXPORTED OBJ
+        # bpy.types.Scene.defPillar = bpy.props.BoolProperty(name="Default Pillar", default=True) # UI BOOLEAN TO MAKE PILLAR
+        # bpy.types.Scene.defGoals = bpy.props.BoolProperty(name="Default Goals", default=True) # UI BOOLEAN TO MAKE GOALS
+        # bpy.types.Scene.defSpawns = bpy.props.BoolProperty(name="Default Spawns", default=True) # UI BOOLEAN TO MAKE SPAWNS
+        # bpy.types.Scene.defBoost = bpy.props.BoolProperty(name="Default Boost", default=True) # UI BOOLEAN TO MAKE BOOST
+        # bpy.types.Scene.conf_path = bpy.props.StringProperty(name="CSV", default = "", description = "Define export directory for CSV file", subtype='FILE_PATH') # SELECTED PATH TO PLACE EXPORTED UDK AND T3D DATA
+        # bpy.types.Scene.numberSequencer = bpy.props.IntProperty(name="", default=0, min=0, max=1000000000) # INT PROPERTIED FOR HOLDING NUMERIC VALUE OF CREATED OBJECTS
+        # bpy.types.Scene.value = bpy.props.IntProperty(name="", default=0, min=-90, max=90) # INT PROPERTY FOR SETTING ROTATIONS
+        # bpy.types.Scene.axis = bpy.props.StringProperty(name="", default = "", description = "") # STRING PROPERTY FOR SETTING ROTATIONS
+        # bpy.types.Scene.xBool = bpy.props.BoolProperty(name="") # BOOLEAN PROPERTY FOR SETTING ROTATIONS
+        # bpy.types.Scene.yBool = bpy.props.BoolProperty(name="") # BOOLEAN PROPERTY FOR SETTING ROTATIONS
+        # bpy.types.Scene.zBool = bpy.props.BoolProperty(name="") # BOOLEAN PROPERTY FOR SETTING ROTATIONS
+        # bpy.types.Scene.errorCode = bpy.props.IntProperty(name="ErrorCode", default=0, min=0, max=90)
+        
+        # return {'FINISHED'}
 
 #this function is called on plugin loading(installing), adding class definitions into blender
 #to be used, drawed and called
@@ -306,8 +362,9 @@ def register():
     # Don't register other panels, operators etc.
         return
     
-    bpy.utils.register_class(finishRegister)
-    bpy.ops.rlmm.finish_register()
+    finishRegister()
+    # bpy.utils.register_class(finishRegister)
+    # bpy.ops.rlmm.finish_register()
 
 
 #same as register but backwards, deleting references
