@@ -16,13 +16,17 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+#STATICMESH DEFAULT ARCHETYPE
+# ---------------------------------------------
+defStaticArch = 'Engine.Default__StaticMeshActor'
+
 # STATICMESH STRING
 # ---------------------------------------------
 staticMeshString = """
 Begin Map
    Begin Level
-      Begin Actor Class=StaticMeshActor Name=StaticMeshActor_{0} Archetype=StaticMeshActor'Engine.Default__StaticMeshActor'
-         Begin Object Class=StaticMeshComponent Name=StaticMeshComponent{0} ObjName=StaticMeshComponent_{0} Archetype=StaticMeshComponent'Engine.Default__StaticMeshActor:StaticMeshComponent0'
+      Begin Actor Class=StaticMeshActor Name=StaticMeshActor_{0} Archetype=StaticMeshActor'{9}'
+         Begin Object Class=StaticMeshComponent Name=StaticMeshComponent{0} ObjName=StaticMeshComponent_{0} Archetype=StaticMeshComponent'{9}:StaticMeshComponent0'
             StaticMesh=StaticMesh'{1}'
             VertexPositionVersionNumber=1
             {2}
@@ -39,22 +43,21 @@ Begin Map
          End Object
          StaticMeshComponent=StaticMeshComponent'StaticMeshComponent_{0}'
          Components(0)=StaticMeshComponent'StaticMeshComponent_{0}'
-         Location=(X={4[0]},Y={4[1]},Z={4[2]})
-         Rotation=(Pitch={5[0]},Yaw={5[1]},Roll={5[2]})
-         DrawScale3D=(X={6[0]},Y={6[1]},Z={6[2]})
+         Location=(X={4[0]:.6f},Y={4[1]:.6f},Z={4[2]:.6f})
+         Rotation=(Pitch={5[0]:.6f},Yaw={5[1]:.6f},Roll={5[2]:.6f})
+         DrawScale3D=(X={6[0]:.6f},Y={6[1]:.6f},Z={6[2]:.6f})
          Tag="{7}"
          Layer="{8}"
          BlockRigidBody=True
          CreationTime=0
          CollisionComponent=StaticMeshComponent'StaticMeshComponent_{0}'
          Name="{7}_{0}"
-         ObjectArchetype=StaticMeshActor'Engine.Default__StaticMeshActor'
+         ObjectArchetype=StaticMeshActor'{9}'
       End Actor
    End Level
 Begin Surface
 End Surface
-End Map
-        """
+End Map"""
         
 # -------- How to WRITE MESH STRING ------
 
@@ -103,10 +106,10 @@ Begin Map
          End Object
          Parameters=ParameterDispenser_X'ParameterDispenser_X_{0}'
          Components(0)=SpriteComponent'SpriteComponent_{0}'
-         Location=(X={2[0]},Y={2[1]},Z={2[2]})
-         Rotation=(Pitch={1[0]},Yaw={1[1]},Roll={1[2]})
+         Location=(X={2[0]:.6f},Y={2[1]:.6f},Z={2[2]:.6f})
+         Rotation=(Pitch={1[0]:.6f},Yaw={1[1]:.6f},Roll={1[2]:.6f})
          bNoDelete=True
-         Tag="Boost_Small"
+         Tag="Boost_{3}"
          Layer="Field, Boost"
          Name="FXActor_Boost_TA_{0}"
          ObjectArchetype=FXActor_TA'Park_P.pickup_boost.Boost{3}_FXActor'
@@ -144,9 +147,10 @@ Begin Map
          Components(0)=CylinderComponent'CylinderComponent_{0}'
          Components(1)=()
          Components(2)=SpriteComponent'SpriteComponent_{0}'
-         Location=(X={2[0]},Y={2[1]},Z={2[2]})
-		 Rotation=(Pitch={3[0]},Yaw={3[1]},Roll={3[2]})
+         Location=(X={2[0]:.6f},Y={2[1]:.6f},Z={2[2]:.6f})
+		 Rotation=(Pitch={3[0]:.6f},Yaw={3[1]:.6f},Roll={3[2]:.6f})
          Tag="{4}_VehiclePickup_Boost_TA_{0}"
+         Layer="Field, Boost"
          CollisionComponent=CylinderComponent'CylinderComponent_{0}'
          Name="VehiclePickup_Boost_TA_{0}"
          ObjectArchetype=VehiclePickup_Boost_TA'Park_P.archetypes.vehiclepickup.VehiclePickup_Boost{1}'
@@ -162,6 +166,7 @@ boostSmStaticLoc = [
 [[0.0, 3257, 8.965], ['Park_P.park_assets.Meshes.BoostPads_03_Combined']]
 ]
 
+boostSmMesh = 'HoopsStadium_P.pickup_boost.BoostPad_Small'
 boostSmMaterials = """Materials(0)=MaterialInstanceConstant'HoopsStadium_P.pickup_boost.Materials.BoostPad_Small_MIC'"""
 boostLgMaterials = """Materials(0)=Material'Park_P.pickup_boost.Materials.BoostPad_Mat'"""
 boostLgMesh = 'Park_P.pickup_boost.BoostPad_Large'
@@ -190,8 +195,8 @@ Begin Level
      End Object
      Components(0)=SpriteComponent'SpriteComponent_{0}'
      Components(1)=ArrowComponent'ArrowComponent_2'
-     Location=(X={1[0]},Y={1[1]},Z={1[2]})
-     Rotation=(Pitch={2[0]},Yaw={2[1]},Roll={2[2]})
+     Location=(X={1[0]:.6f},Y={1[1]:.6f},Z={1[2]:.6f})
+     Rotation=(Pitch={2[0]:.6f},Yaw={2[1]:.6f},Roll={2[2]:.6f})
      DrawScale=1
      CreationTime=0
      Tag=PointInSpace_TA
@@ -240,9 +245,9 @@ Begin Map
          Brush=Model'Model_{0}'
          BrushComponent=BrushComponent'BrushComponent_{0}'
          Components(0)=BrushComponent'BrushComponent_{0}'
-         Location=(X={3[0]},Y={3[1]},Z={3[2]})
-		 Rotation=(Pitch={4[0]},Yaw={4[1]},Roll=4[2])
-         DrawScale3D=(X={5[0]},Y={5[1]},Z={5[2]})
+         Location=(X={3[0]:.6f},Y={3[1]:.6f},Z={3[2]:.6f})
+		 Rotation=(Pitch={4[0]:.6f},Yaw={4[1]:.6f},Roll={4[2]:.6f})
+         DrawScale3D=(X={5[0]:.6f},Y={5[1]:.6f},Z={5[2]:.6f})
          CreationTime=0
          Tag="GoalVolume_Team_#{1}"
          Layer="{6}"
@@ -411,8 +416,8 @@ Begin Map
          Components(2)=ArrowComponent'ArrowComponent_{0}'
          Components(3)=CylinderComponent'CylinderComponent_{0}'
          Components(4)=PathRenderingComponent'PathRenderingComponent_{0}'
-         Location=(X={1[0]},Y={1[1]},Z={1[2]})
-		 Rotation=(Pitch={2[0]},Yaw={2[1]},Roll={2[2]})
+         Location=(X={1[0]:.6f},Y={1[1]:.6f},Z={1[2]:.6f})
+		 Rotation=(Pitch={2[0]:.6f},Yaw={2[1]:.6f},Roll={2[2]:.6f})
          DrawScale=4.000000
          Base=StaticMeshActor'StaticMeshActor_5'
          Tag="PlayerStart_TA_{0}"

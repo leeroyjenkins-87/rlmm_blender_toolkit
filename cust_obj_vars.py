@@ -45,9 +45,9 @@ dynamicTriggerString = """Begin Map
          Brush=Model'Model_{0}'
          BrushComponent=BrushComponent'BrushComponent_{0}'
          Components(0)=BrushComponent'BrushComponent_{0}'
-         Location=(X={2[0]},Y={2[1]},Z={2[2]})
-         Rotation=(Pitch={3[0]},Yaw={3[1]},Roll={3[2]})
-         DrawScale3D=(X={4[0]},Y={4[1]},Z={4[2]})
+         Location=(X={2[0]:.6f},Y={2[1]:.6f},Z={2[2]:.6f})
+         Rotation=(Pitch={3[0]:.6f},Yaw={3[1]:.6f},Roll={3[2]:.6f})
+         DrawScale3D=(X={4[0]:.6f},Y={4[1]:.6f},Z={4[2]:.6f})
          CreationTime=0
          Tag="{5}"
          Layer="{6}"
@@ -142,14 +142,110 @@ spotLightString = """Begin Map
          Components(4)=DrawLightRadiusComponent'DrawLightRadiusComponent_3_{0}'
          Components(5)=SpotLightComponent'SpotLightComponent_{0}'
          Components(6)=ArrowComponent'ArrowComponent_72_{0}'
-         Location=(X={1[0]},Y={1[1]},Z={1[2]})
-         Rotation=(Pitch={2[0]},Yaw={2[1]},Roll={2[2]})
-         DrawScale3D=(X={3[0]},Y={3[1]},Z={3[2]})
+         Location=(X={1[0]:.6f},Y={1[1]:.6f},Z={1[2]:.6f})
+         Rotation=(Pitch={2[0]:.6f},Yaw={2[1]:.6f},Roll={2[2]:.6f})
+         DrawScale3D=(X={3[0]:.6f},Y={3[1]:.6f},Z={3[2]:.6f})
          CreationTime=0
          Tag="{4}"
          Layer="{5}"
          Name="{4}_{0}"
          ObjectArchetype=SpotLightToggleable'Engine.Default__SpotLightToggleable'
+      End Actor
+   End Level
+Begin Surface
+End Surface
+End Map"""
+
+customBoostFxString = """Begin Map
+   Begin Level
+      Begin Actor Class=FXActor_Boost_TA Name=FXActor_Boost_TA_{0} Archetype=FXActor_Boost_TA'tagame.Default__FXActor_Boost_TA'
+         Begin Object Class=StaticMeshComponent Name=StaticMeshComponent_{0} ObjName=StaticMeshComponent_{0}
+            StaticMesh=StaticMesh'{1}'
+            Materials(0)=Material'Park_P.pickup_boost.BoostPad_Mat'
+            Materials(1)=Material'Park_P.pickup_boost.BoostPad_LightCone_03_Mat'
+            ReplacementPrimitive=None
+            Name="StaticMeshComponent_{0}"
+            ObjectArchetype=StaticMeshComponent'Engine.Default__StaticMeshComponent'
+         End Object
+         Begin Object Class=ParticleSystemComponent Name=ParticleSystemComponent_{0} ObjName=ParticleSystemComponent_{0}
+            Template=ParticleSystem'Park_P.pickup_boost.BoostPad_Used_PS'
+            ReplacementPrimitive=None
+            Name="ParticleSystemComponent_{0}"
+            ObjectArchetype=ParticleSystemComponent'Engine.Default__ParticleSystemComponent'
+         End Object
+         Begin Object Class=ParameterDispenser_X Name=DefaultParameters ObjName=ParameterDispenser_X_{0} Archetype=ParameterDispenser_X'tagame.Default__FXActor_Boost_TA:DefaultParameters'
+            Name="ParameterDispenser_X_{0}"
+            ObjectArchetype=ParameterDispenser_X'tagame.Default__FXActor_Boost_TA:DefaultParameters'
+         End Object
+         Begin Object Class=SpriteComponent Name=Sprite ObjName=SpriteComponent_{0} Archetype=SpriteComponent'tagame.Default__FXActor_Boost_TA:Sprite'
+            Sprite=Texture2D'EditorResources.MatIcon_FX'
+            SpriteCategoryName="FXActor"
+            ReplacementPrimitive=None
+            HiddenGame=True
+            AlwaysLoadOnClient=False
+            AlwaysLoadOnServer=False
+            LightingChannels=(bInitialized=True,Dynamic=True)
+            Scale=2.000000
+            Name="SpriteComponent_{0}"
+            ObjectArchetype=SpriteComponent'tagame.Default__FXActor_Boost_TA:Sprite'
+         End Object
+         Attachments(0)=(Name="BaseMesh",Component=StaticMeshComponent'StaticMeshComponent_{0}',AttachAny=(FXActorEvent_X'FXActorEvents.Spawned'),DetachAny=(FXActorEvent_X'FXActorEvents.PickedUp'))
+         Attachments(1)=(Name="PickupPSC",Component=ParticleSystemComponent'ParticleSystemComponent_{0}',AttachAny=(FXActorEvent_X'FXActorEvents.PickedUp'))
+         Parameters=ParameterDispenser_X'ParameterDispenser_X_{0}'
+         Components(0)=SpriteComponent'SpriteComponent_{0}'
+         Location=(X={2[0]:.6f},Y={2[1]:.6f},Z={2[2]:.6f})
+         Rotation=(Pitch={3[0]:.6f},Yaw={3[1]:.6f},Roll={3[2]:.6f})
+         Tag="Boost_{4}"
+         Layer="Field, Boost"
+         bNoDelete=True
+         Tag="FXActor_Boost_TA"
+         Name="FXActor_Boost_TA_{0}"
+         ObjectArchetype=FXActor_Boost_TA'tagame.Default__FXActor_Boost_TA'
+      End Actor
+   End Level
+Begin Surface
+End Surface
+End Map"""
+      
+customPickUpString = """Begin Map
+   Begin Level
+      Begin Actor Class=VehiclePickup_Boost_TA Name=VehiclePickup_Boost_TA_{0} Archetype=VehiclePickup_Boost_TA'tagame.Default__VehiclePickup_Boost_TA'
+         Begin Object Class=CylinderComponent Name=DefaultCollisionCylinder ObjName=CylinderComponent_{0} Archetype=CylinderComponent'tagame.Default__VehiclePickup_Boost_TA:DefaultCollisionCylinder'
+            CollisionHeight=64.000000
+            CollisionRadius={6}
+            ReplacementPrimitive=None
+            CollideActors=True
+            LightingChannels=(bInitialized=True,Dynamic=True)
+            Name="CylinderComponent_{0}"
+            ObjectArchetype=CylinderComponent'tagame.Default__VehiclePickup_Boost_TA:DefaultCollisionCylinder'
+         End Object
+         Begin Object Class=SpriteComponent Name=Sprite ObjName=SpriteComponent_{0} Archetype=SpriteComponent'tagame.Default__VehiclePickup_Boost_TA:Sprite'
+            Sprite=Texture2D'EditorResources.S_KVehFact'
+            SpriteCategoryName="VehiclePickupBoost"
+            ReplacementPrimitive=None
+            HiddenGame=True
+            AlwaysLoadOnClient=False
+            AlwaysLoadOnServer=False
+            LightingChannels=(bInitialized=True,Dynamic=True)
+            Scale=2.000000
+            Name="SpriteComponent_{0}"
+            ObjectArchetype=SpriteComponent'tagame.Default__VehiclePickup_Boost_TA:Sprite'
+         End Object
+         BoostAmount={3}
+         BoostType=BoostType_{4}
+         RespawnDelay={5}
+         FXActorArchetype=FXActor_Boost_TA'FXActor_Boost_TA_{0}'
+         CylinderComponent=CylinderComponent'CylinderComponent_{0}'
+         Components(0)=CylinderComponent'CylinderComponent_{0}'
+         Components(1)=()
+         Components(2)=SpriteComponent'SpriteComponent_{0}'
+         Location=(X={1[0]:.6f},Y={1[1]:.6f},Z={1[2]:.6f})
+         Rotation=(Pitch={2[0]:.6f},Yaw={2[1]:.6f},Roll={2[2]:.6f})
+         Tag="VehiclePickup_Boost_TA"
+         Layer="Field, Boost"
+         CollisionComponent=CylinderComponent'CylinderComponent_{0}'
+         Name="VehiclePickup_Boost_TA_{0}"
+         ObjectArchetype=VehiclePickup_Boost_TA'tagame.Default__VehiclePickup_Boost_TA'
       End Actor
    End Level
 Begin Surface

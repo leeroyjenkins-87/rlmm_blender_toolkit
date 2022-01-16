@@ -112,11 +112,11 @@ class sendToUDK(bpy.types.Operator):
             # STATICMESH NAME
             # --------------------------------------------------------------------
             objName = obj.name.split('.')
-            staticString = "{}.{}".format(mapName[-1], objName[0])
+            staticString = "{}".format(objName[0])
             
             # ArcheType
             if bpy.context.scene.isArchetype == True:
-                archetype = staticString
+                archetype = "{}.{}.{}".format(mapName[-1], 'archetypes', objName[0])
             
             # MATERIAL LIST
             # --------------------------------------------------------------------

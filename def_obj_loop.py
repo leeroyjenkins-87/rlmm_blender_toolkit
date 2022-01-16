@@ -120,7 +120,7 @@ class defaultObjects(bpy.types.Operator):
                         
                         locList = [boostDupeLoc[0] * boostDupe[0], boostDupeLoc[1] * boostDupe[1], boostDupeLoc[2] - 66]
                         
-                        textDefUDK += staticMeshString.format(str(bpy.context.scene.numberSequencer).zfill(10), str(boostLgMesh).rstrip("']").lstrip("['"), boostLgMaterials, '', locList, rotList, boostScale, 'LargeBoostMesh', 'Field,Boost', 'LargeBoost')
+                        textDefUDK += staticMeshString.format(str(bpy.context.scene.numberSequencer).zfill(10), str(boostLgMesh).rstrip("']").lstrip("['"), boostLgMaterials, '', locList, rotList, boostScale, 'LargeBoostMesh', 'Field,Boost', 'LargeBoost', defStaticArch)
 
                         bpy.context.scene.numberSequencer += 1
             
@@ -130,7 +130,7 @@ class defaultObjects(bpy.types.Operator):
                 
                 rotList = [0, 0, 0]
 
-                textDefUDK += staticMeshString.format(str(bpy.context.scene.numberSequencer).zfill(10), str(boostSmMesh[1]).rstrip("']").lstrip("['"), boostSmMaterials, '', boostSmLoc, rotList, boostScale, 'SmallBoostMesh', 'Field,Boost', 'SmallBoost')
+                textDefUDK += staticMeshString.format(str(bpy.context.scene.numberSequencer).zfill(10), str(boostSmMesh[1]).rstrip("']").lstrip("['"), boostSmMaterials, '', boostSmLoc, rotList, boostScale, 'SmallBoostMesh', 'Field,Boost', 'SmallBoost', defStaticArch)
 
                 bpy.context.scene.numberSequencer += 1
     
