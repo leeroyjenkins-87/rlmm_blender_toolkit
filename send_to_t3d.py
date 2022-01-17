@@ -95,6 +95,12 @@ class sendToT3d(bpy.types.Operator):
             f.close()   
             pyperclip.copy(bpy.context.scene.textT3d.rstrip())
             
+            if bpy.context.scene.isT3dFromSend2UDK == False:
+                bpy.context.scene.errorCode = 5
+                bpy.ops.custom.error_message('INVOKE_DEFAULT')
+            
+            bpy.context.scene.isT3dFromSend2UDK = False
+
         return {'FINISHED'}
     
     def stringFormatter(self, inVar, multiple):

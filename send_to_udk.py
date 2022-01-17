@@ -172,6 +172,7 @@ class sendToUDK(bpy.types.Operator):
                 
                 teamNum = 0
                 
+                bpy.context.scene.isT3dFromSend2UDK = True
                 bpy.ops.custom.send_to_t3d()
 
                 #IF LOCATION == NEGATIVE Y SET TO TEAM NUMBER 1
@@ -213,16 +214,20 @@ class sendToUDK(bpy.types.Operator):
                     boostSize = 'Pill'
                     boostAmount = 9999.000000
                     boostDelay = 10.0
-                    CollisionRadius = 96.0                            
+                    CollisionRadius = 96.0   
+                    largeBoostOrb = customLargeBoostFx.format(num)
+                    largeBoostAttach = customLargeBoostAttach.format(num)
                     
                 else:
                     boostSize = 'Pad'
-                    boostAmount = 0.299900
+                    boostAmount = 0.120000
                     boostDelay = 4.0
                     CollisionRadius = 160.0 
+                    largeBoostOrb = ''
+                    largeBoostAttach = ''
                 
                 if bpy.context.scene.customBoostParticles == True:
-                    textUDK += customBoostFxString.format(num, tagString + '_Particles', fxList, rotList, boostSize)
+                    textUDK += customBoostFxString.format(num, tagString + '_Particles', fxList, rotList, boostSize, largeBoostOrb, largeBoostAttach)
                     textUDK += customPickUpString.format(num, pickupList, rotList, boostAmount, boostSize, boostDelay, CollisionRadius)
                     
                 else:
@@ -246,16 +251,13 @@ class sendToUDK(bpy.types.Operator):
             
             bpy.context.scene.numberSequencer += 1
         
-        # if bpy.context.scene.collectRotations == False:
-            # loopCount = 0
-            # while loopCount < objCount:
-                # objHolder[loopCount].select_set(state=True)
-                # loopCount += 1        
-
         f = open( outputFile, 'w' )
         f.writelines( textUDK.rstrip() )
         f.close()   
         pyperclip.copy(textUDK.rstrip())
+        
+        bpy.context.scene.errorCode = 5
+        bpy.ops.custom.error_message('INVOKE_DEFAULT')
         
         return {'FINISHED'}
         

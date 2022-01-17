@@ -156,7 +156,8 @@ class errorMessage(bpy.types.Operator):
                      'NO OBJECTS SELECTED',
                      'NO PARENT/CHILD SELECTED',
                      'UDK PROJECT NAME IS MISSING,GO TO "Set Directories",GO TO "UDK",CLICK THE FOLDER ICON,NAVIGATE TO YOUR UDK PROJECT AND SELECT IT',
-                     '"Parent/Scale" HAS NOT BEEN SET']
+                     '"Parent/Scale" HAS NOT BEEN SET',
+                     'READY TO PASTE INTO UDK']
                      
         layout = self.layout
         

@@ -73,5 +73,8 @@ class makeInstancesReal(bpy.types.Operator):
                 objCollection.objects.link(obj)
 
                 obj.name = bpy.context.scene['prefabOBJ'].name
+                
+            bpy.context.scene.collectRotations = True
+            bpy.context.scene.collectData = True
 
         return {'FINISHED'}

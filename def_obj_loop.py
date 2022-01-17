@@ -139,5 +139,8 @@ class defaultObjects(bpy.types.Operator):
         f.writelines( textDefUDK.rstrip() )
         f.close()   
         pyperclip.copy(textDefUDK.rstrip())
+        
+        bpy.context.scene.errorCode = 5
+        bpy.ops.custom.error_message('INVOKE_DEFAULT')
 
         return {'FINISHED'}

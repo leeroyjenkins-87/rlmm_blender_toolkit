@@ -172,7 +172,7 @@ customBoostFxString = """Begin Map
             ReplacementPrimitive=None
             Name="ParticleSystemComponent_{0}"
             ObjectArchetype=ParticleSystemComponent'Engine.Default__ParticleSystemComponent'
-         End Object
+         End Object{5}
          Begin Object Class=ParameterDispenser_X Name=DefaultParameters ObjName=ParameterDispenser_X_{0} Archetype=ParameterDispenser_X'tagame.Default__FXActor_Boost_TA:DefaultParameters'
             Name="ParameterDispenser_X_{0}"
             ObjectArchetype=ParameterDispenser_X'tagame.Default__FXActor_Boost_TA:DefaultParameters'
@@ -190,7 +190,7 @@ customBoostFxString = """Begin Map
             ObjectArchetype=SpriteComponent'tagame.Default__FXActor_Boost_TA:Sprite'
          End Object
          Attachments(0)=(Name="BaseMesh",Component=StaticMeshComponent'StaticMeshComponent_{0}',AttachAny=(FXActorEvent_X'FXActorEvents.Spawned'),DetachAny=(FXActorEvent_X'FXActorEvents.PickedUp'))
-         Attachments(1)=(Name="PickupPSC",Component=ParticleSystemComponent'ParticleSystemComponent_{0}',AttachAny=(FXActorEvent_X'FXActorEvents.PickedUp'))
+         Attachments(1)=(Name="PickupPSC",Component=ParticleSystemComponent'ParticleSystemComponent_{0}',AttachAny=(FXActorEvent_X'FXActorEvents.PickedUp')){6}
          Parameters=ParameterDispenser_X'ParameterDispenser_X_{0}'
          Components(0)=SpriteComponent'SpriteComponent_{0}'
          Location=(X={2[0]:.6f},Y={2[1]:.6f},Z={2[2]:.6f})
@@ -206,6 +206,15 @@ customBoostFxString = """Begin Map
 Begin Surface
 End Surface
 End Map"""
+
+customLargeBoostFx = """\n         Begin Object Class=ParticleSystemComponent Name=ParticleSystemComponent_2_{0} ObjName=ParticleSystemComponent_2_{0}
+            Template=ParticleSystem'Park_P.pickup_boost.BoostOrb_PS'
+            ReplacementPrimitive=None
+            Name="ParticleSystemComponent_2_{0}"
+            ObjectArchetype=ParticleSystemComponent'Engine.Default__ParticleSystemComponent'
+         End Object"""
+         
+customLargeBoostAttach = """\n         Attachments(2)=(Name="BoostOrb_PSC",Component=ParticleSystemComponent'ParticleSystemComponent_2_{0}',AttachAny=(FXActorEvent_X'FXActorEvents.Spawned'),DetachAny=(FXActorEvent_X'FXActorEvents.PickedUp'))"""
       
 customPickUpString = """Begin Map
    Begin Level
