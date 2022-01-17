@@ -40,7 +40,7 @@ dynamicTriggerString = """Begin Map
             ObjectArchetype=BrushComponent'Engine.Default__DynamicTriggerVolume:BrushComponent0'
          End Object
          Begin Brush Name=Model_{0}
-            {7}
+            {1}
          End Brush
          Brush=Model'Model_{0}'
          BrushComponent=BrushComponent'BrushComponent_{0}'
