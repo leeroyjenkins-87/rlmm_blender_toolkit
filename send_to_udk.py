@@ -106,9 +106,12 @@ class sendToUDK(bpy.types.Operator):
 
             # PROJECT NAME
             # --------------------------------------------------------------------
-            mapDirectory = bpy.context.scene.projectName.split('.')
-            mapName = mapDirectory[-2].split("\\")
-            
+            if ('.' in str(bpy.context.scene.projectName)):
+                mapDirectory = bpy.context.scene.projectName.split('.')
+                mapName = mapDirectory[-2].split("\\")
+            else:
+                mapName = bpy.context.scene.projectName
+                
             # STATICMESH NAME
             # --------------------------------------------------------------------
             objName = obj.name.split('.')
@@ -186,7 +189,7 @@ class sendToUDK(bpy.types.Operator):
             # --------------------------------------------------------------------                
             elif ('DynamicTrigger' in str(objName)):
                 
-                    
+                bpy.context.scene.isT3dFromSend2UDK = True
                 bpy.ops.custom.send_to_t3d()
 
                 textUDK += dynamicTriggerString.format(num, bpy.context.scene.textT3d, locList, rotList, scaleList, tagString, layerString)

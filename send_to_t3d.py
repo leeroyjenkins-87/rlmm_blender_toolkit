@@ -47,7 +47,8 @@ class sendToT3d(bpy.types.Operator):
             linkCount = 0
             
             for f in objectString.data.polygons:
-                
+            
+                # ADDS LINKCOUNT TO IDX 1
                 stringList = [linkCount]
                 
                 originShort = objectString.data.vertices[f.vertices[0]].co
@@ -67,24 +68,27 @@ class sendToT3d(bpy.types.Operator):
                 else:
                     stringList.extend(['+00001.000000','+00000.000000','+00000.000000','+00000.000000','+00001.000000','+00000.000000'])
                 
+                verticeString = ''
+                
                 for idx in f.vertices:
 
                     idxList = [objectString.data.vertices[idx].co.x, objectString.data.vertices[idx].co.y, objectString.data.vertices[idx].co.z]
-
-                    stringList.extend(self.stringFormatter(idxList, 100))
+                    # HAVE TO DO THIS FOR FACES WITH MORE OR LESS THAN 4 VERTICES
+                    
+                    #stringList.extend(self.stringFormatter(idxList, 100))
+                    verticeList = []
+                    verticeList.extend(self.stringFormatter(idxList, 100))
+                    verticeString += """\t\tVertex   {},{},{}\n""".format(*verticeList)
 
                 linkCount += 1
                 
-                bpy.context.scene.textT3d += """\n\tBegin Polygon Flags=3584 Link={}
-        Origin   {},{},{}
-        Normal   {},{},{}
-        TextureU {},{},{}
-        TextureV {},{},{}
-        Vertex   {},{},{}
-        Vertex   {},{},{}
-        Vertex   {},{},{}
-        Vertex   {},{},{}
-    End Polygon""".format(*stringList)
+                bpy.context.scene.textT3d += """\n\tBegin Polygon Flags=3584 Link={0[0]}
+        Origin   {0[1]},{0[2]},{0[3]}
+        Normal   {0[4]},{0[5]},{0[6]}
+        TextureU {0[7]},{0[8]},{0[9]}
+        TextureV {0[10]},{0[11]},{0[12]}
+{1}
+    End Polygon""".format(stringList, verticeString)
 
             bpy.context.scene.textT3d += '\nEnd PolyList'
             fileName = '{}{}'.format(objectStringName, '.t3d')
@@ -108,12 +112,14 @@ class sendToT3d(bpy.types.Operator):
         outVar = []
         
         for var in inVar:
-            
+
             if ('-' in str(var)):
-                idxVar = str(round(var * multiple, 6)).lstrip('-').split('.')
+                fixScientificMethod = "{0:.6f}".format(round(var * multiple, 6))
+                idxVar = fixScientificMethod.lstrip('-').split('.')
                 idxVarString = '-' + idxVar[0].zfill(5) + '.' + idxVar[1].ljust(6, '0')
             else:
-                idxVar = str(round(var * multiple, 6)).split('.')
+                fixScientificMethod = "{0:.6f}".format(round(var * multiple, 6))
+                idxVar = fixScientificMethod.split('.')
                 idxVarString = '+' + idxVar[0].zfill(5) + '.' + idxVar[1].ljust(6, '0')
 
             outVar.append(idxVarString)
