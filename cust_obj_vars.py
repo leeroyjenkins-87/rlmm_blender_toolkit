@@ -46,11 +46,11 @@ dynamicTriggerString = """Begin Map
          BrushComponent=BrushComponent'BrushComponent_{0}'
          Components(0)=BrushComponent'BrushComponent_{0}'
          Location=(X={2[0]:.6f},Y={2[1]:.6f},Z={2[2]:.6f})
-         Rotation=(Pitch={3[0]:.6f},Yaw={3[1]:.6f},Roll={3[2]:.6f})
+         Rotation=(Pitch={3[0]:.0f},Yaw={3[1]:.0f},Roll={3[2]:.0f})
          DrawScale3D=(X={4[0]:.6f},Y={4[1]:.6f},Z={4[2]:.6f})
          CreationTime=0
          Tag="{5}"
-         Layer="{6}"
+         Layer="{6}"{7}
          CollisionComponent=BrushComponent'BrushComponent_{0}'
          Name="{5}_{0}"
          ObjectArchetype=DynamicTriggerVolume'Engine.Default__DynamicTriggerVolume'
@@ -143,7 +143,7 @@ spotLightString = """Begin Map
          Components(5)=SpotLightComponent'SpotLightComponent_{0}'
          Components(6)=ArrowComponent'ArrowComponent_72_{0}'
          Location=(X={1[0]:.6f},Y={1[1]:.6f},Z={1[2]:.6f})
-         Rotation=(Pitch={2[0]:.6f},Yaw={2[1]:.6f},Roll={2[2]:.6f})
+         Rotation=(Pitch={2[0]:.0f},Yaw={2[1]:.0f},Roll={2[2]:.0f})
          DrawScale3D=(X={3[0]:.6f},Y={3[1]:.6f},Z={3[2]:.6f})
          CreationTime=0
          Tag="{4}"
@@ -194,7 +194,7 @@ customBoostFxString = """Begin Map
          Parameters=ParameterDispenser_X'ParameterDispenser_X_{0}'
          Components(0)=SpriteComponent'SpriteComponent_{0}'
          Location=(X={2[0]:.6f},Y={2[1]:.6f},Z={2[2]:.6f})
-         Rotation=(Pitch={3[0]:.6f},Yaw={3[1]:.6f},Roll={3[2]:.6f})
+         Rotation=(Pitch={3[0]:.0f},Yaw={3[1]:.0f},Roll={3[2]:.0f})
          Tag="Boost_{4}"
          Layer="Field, Boost"
          bNoDelete=True
@@ -249,7 +249,7 @@ customPickUpString = """Begin Map
          Components(1)=()
          Components(2)=SpriteComponent'SpriteComponent_{0}'
          Location=(X={1[0]:.6f},Y={1[1]:.6f},Z={1[2]:.6f})
-         Rotation=(Pitch={2[0]:.6f},Yaw={2[1]:.6f},Roll={2[2]:.6f})
+         Rotation=(Pitch={2[0]:.0f},Yaw={2[1]:.0f},Roll={2[2]:.0f})
          Tag="VehiclePickup_Boost_TA"
          Layer="Field, Boost"
          CollisionComponent=CylinderComponent'CylinderComponent_{0}'
@@ -260,3 +260,49 @@ customPickUpString = """Begin Map
 Begin Surface
 End Surface
 End Map"""
+
+customKactorString = """Begin Map
+   Begin Level
+      Begin Actor Class=KActor Name=KActor_{0} Archetype=KActor'Engine.Default__KActor'
+         Begin Object Class=DynamicLightEnvironmentComponent Name=MyLightEnvironment ObjName=DynamicLightEnvironmentComponent_{0} Archetype=DynamicLightEnvironmentComponent'Engine.Default__KActor:MyLightEnvironment'
+            Name="DynamicLightEnvironmentComponent_{0}"
+            ObjectArchetype=DynamicLightEnvironmentComponent'Engine.Default__KActor:MyLightEnvironment'
+         End Object
+         Begin Object Class=StaticMeshComponent Name=StaticMeshComponent0 ObjName=StaticMeshComponent_{0} Archetype=StaticMeshComponent'Engine.Default__KActor:StaticMeshComponent0'
+            StaticMesh=StaticMesh'{1}'
+            WireframeColor=(B=128,G=255,R=0,A=255)
+            {2}
+            ReplacementPrimitive=None
+            LightEnvironment=DynamicLightEnvironmentComponent'DynamicLightEnvironmentComponent_{0}'
+            RBChannel=RBCC_GameplayPhysics
+            bBlockFootPlacement=False
+            LightingChannels=(bInitialized=True,Dynamic=True)
+            RBCollideWithChannels=(Default=True,Vehicle=True,GameplayPhysics=True,EffectPhysics=True,Ball=True,BlockingVolume=True)
+            Name="StaticMeshComponent_{0}"
+            ObjectArchetype=StaticMeshComponent'Engine.Default__KActor:StaticMeshComponent0'
+         End Object
+         bWakeOnLevelStart=True
+         bLimitMaxPhysicsVelocity=True
+         MaxPhysicsVelocity=0.000000
+         StaticMeshComponent=StaticMeshComponent'StaticMeshComponent_{0}'
+         LightEnvironment=DynamicLightEnvironmentComponent'DynamicLightEnvironmentComponent_{0}'
+         Components(0)=DynamicLightEnvironmentComponent'DynamicLightEnvironmentComponent_{0}'
+         Components(1)=StaticMeshComponent'StaticMeshComponent_{0}'
+         Location=(X={3[0]:.6f},Y={3[1]:.6f},Z={3[2]:.6f})
+         Rotation=(Pitch={4[0]:.0f},Yaw={4[1]:.0f},Roll={4[2]:.0f})
+         DrawScale3D=(X={5[0]:.6f},Y={5[1]:.6f},Z={5[2]:.6f})
+         Tag="{6}"
+         Layer="{7}"{8}
+         CollisionComponent=StaticMeshComponent'StaticMeshComponent_{0}'
+         Name="KActor_{0}"
+         ObjectArchetype=KActor'Engine.Default__KActor'
+      End Actor
+   End Level
+Begin Surface
+End Surface
+End Map"""
+
+customAttachParentString = """\n         Attached({0})={1}'{2}'""" #.format(indexNumber, meshType, meshName)
+
+customAttachChildString = """\n         Base={0}'{1}' 
+         bHardAttach=True""" #.format(meshType, meshName)

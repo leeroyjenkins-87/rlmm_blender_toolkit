@@ -81,7 +81,7 @@ class defaultObjects(bpy.types.Operator):
 
         if bpy.context.scene.defPillar == True:
             
-            textDefUDK += pillarString.format(str(bpy.context.scene.numberSequencer).zfill(10), goalCreatedList, playerCreatedList)
+            textDefUDK += pillarString.format(str(bpy.context.scene.numberSequencer).zfill(10), goalCreatedList, playerCreatedList, [0, 0, 52])
 
             bpy.context.scene.numberSequencer += 1
             

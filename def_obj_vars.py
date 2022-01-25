@@ -44,10 +44,10 @@ Begin Map
          StaticMeshComponent=StaticMeshComponent'StaticMeshComponent_{0}'
          Components(0)=StaticMeshComponent'StaticMeshComponent_{0}'
          Location=(X={4[0]:.6f},Y={4[1]:.6f},Z={4[2]:.6f})
-         Rotation=(Pitch={5[0]:.6f},Yaw={5[1]:.6f},Roll={5[2]:.6f})
+         Rotation=(Pitch={5[0]:.0f},Yaw={5[1]:.0f},Roll={5[2]:.0f})
          DrawScale3D=(X={6[0]:.6f},Y={6[1]:.6f},Z={6[2]:.6f})
          Tag="{7}"
-         Layer="{8}"
+         Layer="{8}"{10}
          BlockRigidBody=True
          CreationTime=0
          CollisionComponent=StaticMeshComponent'StaticMeshComponent_{0}'
@@ -107,7 +107,7 @@ Begin Map
          Parameters=ParameterDispenser_X'ParameterDispenser_X_{0}'
          Components(0)=SpriteComponent'SpriteComponent_{0}'
          Location=(X={2[0]:.6f},Y={2[1]:.6f},Z={2[2]:.6f})
-         Rotation=(Pitch={1[0]:.6f},Yaw={1[1]:.6f},Roll={1[2]:.6f})
+         Rotation=(Pitch={1[0]:.0f},Yaw={1[1]:.0f},Roll={1[2]:.0f})
          bNoDelete=True
          Tag="Boost_{3}"
          Layer="Field, Boost"
@@ -148,7 +148,7 @@ Begin Map
          Components(1)=()
          Components(2)=SpriteComponent'SpriteComponent_{0}'
          Location=(X={2[0]:.6f},Y={2[1]:.6f},Z={2[2]:.6f})
-		 Rotation=(Pitch={3[0]:.6f},Yaw={3[1]:.6f},Roll={3[2]:.6f})
+		 Rotation=(Pitch={3[0]:.0f},Yaw={3[1]:.0f},Roll={3[2]:.0f})
          Tag="{4}_VehiclePickup_Boost_TA_{0}"
          Layer="Field, Boost"
          CollisionComponent=CylinderComponent'CylinderComponent_{0}'
@@ -196,7 +196,7 @@ Begin Level
      Components(0)=SpriteComponent'SpriteComponent_{0}'
      Components(1)=ArrowComponent'ArrowComponent_2'
      Location=(X={1[0]:.6f},Y={1[1]:.6f},Z={1[2]:.6f})
-     Rotation=(Pitch={2[0]:.6f},Yaw={2[1]:.6f},Roll={2[2]:.6f})
+     Rotation=(Pitch={2[0]:.0f},Yaw={2[1]:.0f},Roll={2[2]:.0f})
      DrawScale=1
      CreationTime=0
      Tag=PointInSpace_TA
@@ -246,7 +246,7 @@ Begin Map
          BrushComponent=BrushComponent'BrushComponent_{0}'
          Components(0)=BrushComponent'BrushComponent_{0}'
          Location=(X={3[0]:.6f},Y={3[1]:.6f},Z={3[2]:.6f})
-		 Rotation=(Pitch={4[0]:.6f},Yaw={4[1]:.6f},Roll={4[2]:.6f})
+		 Rotation=(Pitch={4[0]:.0f},Yaw={4[1]:.0f},Roll={4[2]:.0f})
          DrawScale3D=(X={5[0]:.6f},Y={5[1]:.6f},Z={5[2]:.6f})
          CreationTime=0
          Tag="GoalVolume_Team_#{1}"
@@ -417,7 +417,7 @@ Begin Map
          Components(3)=CylinderComponent'CylinderComponent_{0}'
          Components(4)=PathRenderingComponent'PathRenderingComponent_{0}'
          Location=(X={1[0]:.6f},Y={1[1]:.6f},Z={1[2]:.6f})
-		 Rotation=(Pitch={2[0]:.6f},Yaw={2[1]:.6f},Roll={2[2]:.6f})
+		 Rotation=(Pitch={2[0]:.0f},Yaw={2[1]:.0f},Roll={2[2]:.0f})
          DrawScale=4.000000
          Base=StaticMeshActor'StaticMeshActor_5'
          Tag="PlayerStart_TA_{0}"

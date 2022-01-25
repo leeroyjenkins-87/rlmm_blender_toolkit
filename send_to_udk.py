@@ -69,190 +69,34 @@ class sendToUDK(bpy.types.Operator):
         
         outputFile = '{}{}'.format(bpy.path.abspath(bpy.context.scene.conf_path), "Blender2UDK.csv")
         
+        textUDK_input = ""
         textUDK = ""
            
         loopCount = 0
         
-        archetype = defStaticArch
-        
         while loopCount < objCount:
-        
-            num = str(bpy.context.scene.numberSequencer).zfill(10)
             
             if bpy.context.scene.collectData == True: 
                 obj = bpy.data.collections[bpy.context.scene.collectionHolder].objects[loopCount]
             else:
                 obj = objHolder[loopCount]
-        
-            obj.select_set(True)
-            
-            bpy.context.view_layer.objects.active = obj
-            
-            
-            # LOCATION XYZ
-            # --------------------------------------------------------------------
-            locList = self.getLoc(obj.location)
-            
-            # ROTATION XYZ 
-            # --------------------------------------------------------------------
-            rotList = self.getRot(obj.rotation_euler)
 
-            # SCALE XYZ
-            # --------------------------------------------------------------------
-            scaleList = []
-            
-            for objScale in obj.scale:
-                scaleList.append(round(objScale, 6))
+            if bpy.context.scene.ishardAttach == True:
+                textUDK += self.pushSend(obj, textUDK_input, self.createHardAttach(True, obj), False, '', '', '')
+                
+                attachCount = 0
+                
+                for attachIDX in reversed(range(bpy.context.scene.hard_index, -1, -1)):    
+                    attachOBJ = bpy.context.scene.hard_collection[attachIDX].obj
+                    textUDK += self.pushSend(attachOBJ, textUDK_input, self.createHardAttach(False, obj), True, self.getLoc(obj.location), self.getRot(obj.rotation_euler), attachCount)
+                    attachCount += 1
 
-            # PROJECT NAME
-            # --------------------------------------------------------------------
-            if ('.' in str(bpy.context.scene.projectName)):
-                mapDirectory = bpy.context.scene.projectName.split('.')
-                mapName = mapDirectory[-2].split("\\")
+                loopCount += 1
+                bpy.context.scene.numberSequencer += 1
             else:
-                mapName = bpy.context.scene.projectName
-                
-            # STATICMESH NAME
-            # --------------------------------------------------------------------
-            objName = obj.name.split('.')
-            staticString = "{}".format(objName[0])
-            
-            # ArcheType
-            if bpy.context.scene.isArchetype == True:
-                archetype = "{}.{}.{}".format(mapName[-1], 'archetypes', objName[0])
-            
-            # MATERIAL LIST
-            # --------------------------------------------------------------------
-            materialCount = 0
-            materialNames = ''
-            
-            if bpy.context.scene.collectMaterials == True:
-                
-                for objSlots in obj.material_slots:
-                    materialSlots = objSlots.material.name.lstrip('"').rstrip('"').replace("'", "").lstrip("Material'")
-                    materialString = "Materials({})=Material'{}'\n\t\t\t\t\t".format(materialCount, materialSlots)
-                    materialCount += 1
-                    materialNames += materialString
-            
-            # LAYER
-            # --------------------------------------------------------------------
-            layerString = str(obj.users_collection[0].name.rstrip(".0123456789"))
-            
-            # TAG
-            # --------------------------------------------------------------------
-            tagString = str(objName[0]).rstrip(".0123456789")
-            
-            # PHYSICAL MATERIAL APPLIED
-            # --------------------------------------------------------------------
-            if bpy.context.scene.physMat == True:
-                physString = 'PhysicalMaterials.Collision_Sticky'
-            else:
-                physString = ''
-                
-            # FORMATTING FOR STATICMESH 
-            # --------------------------------------------------------------------
-            if ('StaticMesh' in str(objName)):
-                textUDK += staticMeshString.format(num, staticString, materialNames.rstrip(), physString, locList, rotList, scaleList, tagString, layerString, archetype)
-            
-            # FORMATTING FOR SPOTLIGHT 
-            # --------------------------------------------------------------------
-            elif ('Spot' in str(objName)):
-            
-                # ROTATION XYZ FOR SPOTLIGHTS IS NEGATIVE 90 DEGREES IN UDK SO WE HAVE TO ADJUST IT.
-                bpy.ops.custom.set_pos_y()
-
-                rotList = self.getRot(obj.rotation_euler)
-                
-                # ADUJUST ROTATION BACK 90 DEGREES
-                bpy.ops.custom.set_neg_y()
-                
-                textUDK += spotLightString.format(num, locList, rotList, scaleList, tagString, layerString)
-                
-            # FORMATTING FOR CUSTOM GOAL 
-            # AS FAR AS I CAN TELL YOU CAN'T DO AN ARCHETYPE FOR THIS
-            # --------------------------------------------------------------------
-            elif ('GoalVolume' in str(objName)):
-                
-                teamNum = 0
-                
-                bpy.context.scene.isT3dFromSend2UDK = True
-                bpy.ops.custom.send_to_t3d()
-
-                #IF LOCATION == NEGATIVE Y SET TO TEAM NUMBER 1
-                if locList[1] < 0:
-                    teamNum = 1
-
-                textUDK += goalString.format(num, teamNum, bpy.context.scene.textT3d, locList, rotList, scaleList, layerString)
-                
-            # FORMATTING FOR DYNAMIC TRIGGER 
-            # AS FAR AS I CAN TELL YOU CAN'T DO AN ARCHETYPE FOR THIS 
-            # --------------------------------------------------------------------                
-            elif ('DynamicTrigger' in str(objName)):
-                
-                bpy.context.scene.isT3dFromSend2UDK = True
-                bpy.ops.custom.send_to_t3d()
-
-                textUDK += dynamicTriggerString.format(num, bpy.context.scene.textT3d, locList, rotList, scaleList, tagString, layerString)
-                
-            # FORMATTING FOR CUSTOM BOOST
-            # --------------------------------------------------------------------
-            elif ('Boost' in str(objName)):
-                
-                if bpy.context.scene.customBoostMesh == True:
-                    textUDK += staticMeshString.format(num, staticString, materialNames.rstrip(), physString, locList, rotList, scaleList, tagString, layerString, archetype)
-                elif ("Large" in str(objName)):
-                    textUDK += staticMeshString.format(num, boostLgMesh, materialNames.rstrip(), physString, locList, rotList, scaleList, tagString, layerString, archetype)
-                else:
-                    textUDK += staticMeshString.format(num, boostSmMesh, materialNames.rstrip(), physString, locList, rotList, scaleList, tagString, layerString, archetype)
-              
-                fxLoc = [0.0, 0.0, 0.05]
-                self.setBoostLoc(obj, fxLoc)    
-                fxList = self.getLoc(obj.location)
-                
-                pickupLoc = [0.0, 0.0, 0.67]
-                self.setBoostLoc(obj, pickupLoc)
-                pickupList = self.getLoc(obj.location)
-                
-                if ('Large' in str(objName)):
-                    boostSize = 'Pill'
-                    boostAmount = 9999.000000
-                    boostDelay = 10.0
-                    CollisionRadius = 96.0   
-                    largeBoostOrb = customLargeBoostFx.format(num)
-                    largeBoostAttach = customLargeBoostAttach.format(num)
-                    
-                else:
-                    boostSize = 'Pad'
-                    boostAmount = 0.120000
-                    boostDelay = 4.0
-                    CollisionRadius = 160.0 
-                    largeBoostOrb = ''
-                    largeBoostAttach = ''
-                
-                if bpy.context.scene.customBoostParticles == True:
-                    textUDK += customBoostFxString.format(num, tagString + '_Particles', fxList, rotList, boostSize, largeBoostOrb, largeBoostAttach)
-                    textUDK += customPickUpString.format(num, pickupList, rotList, boostAmount, boostSize, boostDelay, CollisionRadius)
-                    
-                else:
-                    textUDK += boostFxString.format(num, rotList, fxList, boostSize)
-                    textUDK += boostPickupString.format(num, boostSize, pickupList, rotList, boostSize)
-                
-                orgLoc = [0.0, 0.0, -0.72]
-                self.setBoostLoc(obj, orgLoc)
-
-            # SKIP PARTICLES MESHES
-            # --------------------------------------------------------------------
-            elif ('Particles' in str(objName)):
-                textUDK += ''
-                
-            # FORMATTTING FOR EVERYTHING ELSE 
-            # --------------------------------------------------------------------
-            else:
-                textUDK += staticMeshString.format(num, staticString, materialNames.rstrip(), physString, locList, rotList, scaleList, tagString, layerString, archetype)
-        
-            loopCount += 1
-            
-            bpy.context.scene.numberSequencer += 1
+                textUDK += self.pushSend(obj, textUDK_input, '', False, '', '', '')
+                loopCount += 1
+                bpy.context.scene.numberSequencer += 1
         
         f = open( outputFile, 'w' )
         f.writelines( textUDK.rstrip() )
@@ -268,7 +112,7 @@ class sendToUDK(bpy.types.Operator):
         tempList = []
         flipRot = [-1,1,-1]
         count = 0
-        
+
         for idxRot in inVar:
             multRot = round((degrees(idxRot) * flipRot[count]) * (65536 / 360))
             tempList.append(multRot)
@@ -296,3 +140,265 @@ class sendToUDK(bpy.types.Operator):
         inVar1.matrix_basis @= loc
         
         return
+        
+    def pushSend(self, inVar1, inVar2, inVar3, inVar4, inVar5, inVar6, inVar7):
+    
+        obj = inVar1
+        textUDK = inVar2
+        hardAttach = inVar3
+        isAttachChild = inVar4
+
+        num = str(bpy.context.scene.numberSequencer).zfill(10)
+        
+        obj.select_set(True)
+            
+        bpy.context.view_layer.objects.active = obj
+        
+        # LOCATION XYZ
+        # --------------------------------------------------------------------
+        if isAttachChild == True:
+            locList = inVar5
+        else:
+            locList = self.getLoc(obj.location)
+        
+        # ROTATION XYZ 
+        # --------------------------------------------------------------------
+        if isAttachChild == True:
+            rotList = inVar6
+        else:
+            rotList = self.getRot(obj.rotation_euler)
+
+        # SCALE XYZ
+        # --------------------------------------------------------------------
+        scaleList = []
+        
+        for objScale in obj.scale:
+            scaleList.append(round(objScale, 6))
+
+        # PROJECT NAME
+        # --------------------------------------------------------------------
+        if ('.' in str(bpy.context.scene.projectName)):
+            mapDirectory = bpy.context.scene.projectName.split('.')
+            mapName = mapDirectory[-2].split("\\")
+        else:
+            mapName = bpy.context.scene.projectName
+            
+        # STATICMESH NAME
+        # --------------------------------------------------------------------
+        objName = obj.name.split('.')
+        staticString = "{}".format(objName[0])
+        
+        # ArcheType
+        if bpy.context.scene.isArchetype == True:
+            archetype = "{}.{}.{}".format(mapName[-1], 'archetypes', objName[0])
+        else:
+            archetype = defStaticArch
+        
+        # MATERIAL LIST
+        # --------------------------------------------------------------------
+        materialCount = 0
+        materialNames = ''
+        
+        if bpy.context.scene.collectMaterials == True:
+            
+            for objSlots in obj.material_slots:
+                materialSlots = objSlots.material.name.lstrip('"').rstrip('"').replace("'", "").lstrip("Material'")
+                materialString = "Materials({})=Material'{}'\n\t\t\t\t\t".format(materialCount, materialSlots)
+                materialCount += 1
+                materialNames += materialString
+        
+        # LAYER
+        # --------------------------------------------------------------------
+        layerString = str(obj.users_collection[0].name.rstrip(".0123456789"))
+        
+        # TAG
+        # --------------------------------------------------------------------
+        tagString = str(objName[0]).rstrip(".0123456789")
+        
+        # PHYSICAL MATERIAL APPLIED
+        # --------------------------------------------------------------------
+        if bpy.context.scene.physMat == True:
+            physString = 'PhysicalMaterials.Collision_Sticky'
+        else:
+            physString = ''
+            
+        # FORMATTING FOR STATICMESH 
+        # --------------------------------------------------------------------
+        if ('StaticMesh' in str(objName)):
+        
+            if isAttachChild == True:
+                num = str(bpy.context.scene.numberSequencer).zfill(10) + '_' + str(inVar7)
+                
+            textUDK += staticMeshString.format(num, staticString, materialNames.rstrip(), physString, locList, rotList, scaleList, tagString, layerString, archetype, hardAttach)
+        
+        # FORMATTING FOR SPOTLIGHT 
+        # --------------------------------------------------------------------
+        elif ('Spot' in str(objName)):
+        
+            # ROTATION XYZ FOR SPOTLIGHTS IS NEGATIVE 90 DEGREES IN UDK SO WE HAVE TO ADJUST IT.
+            bpy.ops.custom.set_pos_y()
+
+            rotList = self.getRot(obj.rotation_euler)
+            
+            # ADUJUST ROTATION BACK 90 DEGREES
+            bpy.ops.custom.set_neg_y()
+            
+            textUDK += spotLightString.format(num, locList, rotList, scaleList, tagString, layerString)
+            
+        # FORMATTING FOR CUSTOM GOAL 
+        # AS FAR AS I CAN TELL YOU CAN'T DO AN ARCHETYPE FOR THIS
+        # --------------------------------------------------------------------
+        elif ('GoalVolume' in str(objName)):
+            
+            teamNum = 0
+            
+            bpy.context.scene.isT3dFromSend2UDK = True
+            bpy.ops.custom.send_to_t3d()
+
+            #IF LOCATION == NEGATIVE Y SET TO TEAM NUMBER 1
+            if locList[1] < 0:
+                teamNum = 1
+
+            textUDK += goalString.format(num, teamNum, bpy.context.scene.textT3d, locList, rotList, scaleList, layerString)
+            
+        # FORMATTING FOR DYNAMIC TRIGGER 
+        # AS FAR AS I CAN TELL YOU CAN'T DO AN ARCHETYPE FOR THIS 
+        # --------------------------------------------------------------------                
+        elif ('DynamicTrigger' in str(objName)):
+            
+            bpy.context.scene.isT3dFromSend2UDK = True
+            bpy.ops.custom.send_to_t3d()
+            
+            if isAttachChild == True:
+                num = str(bpy.context.scene.numberSequencer).zfill(10) + '_' + str(inVar7)
+
+            textUDK += dynamicTriggerString.format(num, bpy.context.scene.textT3d, locList, rotList, scaleList, tagString, layerString, hardAttach)
+            
+        # FORMATTING FOR CUSTOM BOOST
+        # --------------------------------------------------------------------
+        elif ('Boost' in str(objName)):
+            
+            if bpy.context.scene.customBoostMesh == True:
+                textUDK += staticMeshString.format(num, staticString, materialNames.rstrip(), physString, locList, rotList, scaleList, tagString, layerString, archetype)
+            elif ("Large" in str(objName)):
+                textUDK += staticMeshString.format(num, boostLgMesh, materialNames.rstrip(), physString, locList, rotList, scaleList, tagString, layerString, archetype)
+            else:
+                textUDK += staticMeshString.format(num, boostSmMesh, materialNames.rstrip(), physString, locList, rotList, scaleList, tagString, layerString, archetype)
+          
+            fxLoc = [0.0, 0.0, 0.05]
+            self.setBoostLoc(obj, fxLoc)    
+            fxList = self.getLoc(obj.location)
+            
+            pickupLoc = [0.0, 0.0, 0.67]
+            self.setBoostLoc(obj, pickupLoc)
+            pickupList = self.getLoc(obj.location)
+            
+            if ('Large' in str(objName)):
+                boostSize = 'Pill'
+                boostAmount = 9999.000000
+                boostDelay = 10.0
+                CollisionRadius = 96.0   
+                largeBoostOrb = customLargeBoostFx.format(num)
+                largeBoostAttach = customLargeBoostAttach.format(num)
+                
+            else:
+                boostSize = 'Pad'
+                boostAmount = 0.120000
+                boostDelay = 4.0
+                CollisionRadius = 160.0 
+                largeBoostOrb = ''
+                largeBoostAttach = ''
+            
+            if bpy.context.scene.customBoostParticles == True:
+                textUDK += customBoostFxString.format(num, tagString + '_Particles', fxList, rotList, boostSize, largeBoostOrb, largeBoostAttach)
+                textUDK += customPickUpString.format(num, pickupList, rotList, boostAmount, boostSize, boostDelay, CollisionRadius)
+                
+            else:
+                textUDK += boostFxString.format(num, rotList, fxList, boostSize)
+                textUDK += boostPickupString.format(num, boostSize, pickupList, rotList, boostSize)
+            
+            orgLoc = [0.0, 0.0, -0.72]
+            self.setBoostLoc(obj, orgLoc)
+
+        # SKIP PARTICLES MESHES
+        # --------------------------------------------------------------------
+        elif ('Particles' in str(objName)):
+            textUDK += ''
+            
+        # FORMATTING FOR PILLAR
+        # --------------------------------------------------------------------    
+        elif ('Pillar' in str(objName)):
+            textUDK += pillarString.format(num, '', '', locList)
+            
+        # FORMATTING FOR PLAYERSTART
+        # --------------------------------------------------------------------    
+        elif ('Player' in str(objName)):
+            textUDK += playerString.format(num, locList, rotList)
+            
+        # FORMATTING FOR Interp
+        # --------------------------------------------------------------------    
+        elif ('Interp' in str(objName)):
+            textUDK += ''
+            
+        # FORMATTING FOR Kactor
+        # --------------------------------------------------------------------    
+        elif ('KActor' in str(objName)):
+        
+            if isAttachChild == True:
+                num = str(bpy.context.scene.numberSequencer).zfill(10) + '_' + str(inVar7)
+                
+            textUDK += customKactorString.format(num, staticString, materialNames.rstrip(), locList, rotList, scaleList, tagString, layerString, hardAttach)
+            
+        # FORMATTTING FOR EVERYTHING ELSE 
+        # --------------------------------------------------------------------
+        else:
+        
+            if isAttachChild == True:
+                num = str(bpy.context.scene.numberSequencer).zfill(10) + '_' + str(inVar7)
+                
+            textUDK += staticMeshString.format(num, staticString, materialNames.rstrip(), physString, locList, rotList, scaleList, tagString, layerString, archetype, hardAttach)
+            
+        return textUDK
+        
+    def createHardAttach(self, inVar1, inVar2):
+        # NEED TO INCREMENT NAMES OF MULTIPLE OF THE SAME TYPE
+         # Attached(0)=DynamicTriggerVolume'DynamicTriggerVolume_0000000093'
+         # Attached(1)=DynamicTriggerVolume'DynamicTriggerVolume_0000000093'
+        hardAttach = ''
+        num = str(bpy.context.scene.numberSequencer).zfill(10)
+        count = 0
+        
+        if inVar1 == True:
+            for attachIDX in reversed(range(bpy.context.scene.hard_index, -1, -1)):    
+                attachOBJ = bpy.context.scene.hard_collection[attachIDX].obj
+                
+                objName = attachOBJ.name.split('.')
+                                
+                if ('KActor' in str(objName)):
+                    typeString = 'KActor'
+                    nameString = 'KActor_{0}'.format(num + '_' + str(count))
+                elif ('DynamicTrigger' in str(objName)):
+                    typeString = 'DynamicTriggerVolume'
+                    nameString = 'DynamicTriggerVolume_{0}'.format(num + '_' + str(count))
+                else:
+                    typeString = 'StaticMeshActor'
+                    nameString = 'StaticMeshActor_{0}'.format(num + '_' + str(count))
+                    
+                hardAttach += customAttachParentString.format(attachIDX, typeString, nameString)
+                count += 1
+        else:
+            objName = inVar2.name.split('.')
+            
+            if ('KActor' in str(objName)):
+                typeString = 'KActor'
+                nameString = 'KActor_{0}'.format(num)
+            elif ('DynamicTrigger' in str(objName)):
+                typeString = 'DynamicTriggerVolume'
+                nameString = 'DynamicTriggerVolume_{0}'.format(num)
+            else:
+                typeString = 'StaticMeshActor'
+                nameString = 'StaticMeshActor_{0}'.format(num)
+                
+            hardAttach = customAttachChildString.format(typeString, nameString)
+    
+        return hardAttach

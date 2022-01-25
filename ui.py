@@ -21,7 +21,7 @@ import bpy
 
 class RLMMPJ_PT_Panel(bpy.types.Panel):
     bl_idname = "RLMMPJ_PT_Panel"
-    bl_label = "Set Directories"
+    bl_label = "UDK: Set Directories"
     bl_category = "RLMM Toolkit"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
@@ -36,16 +36,14 @@ class RLMMPJ_PT_Panel(bpy.types.Panel):
         
         boxLayout1.prop(context.scene, 'projectName')
         boxLayout1.prop(context.scene, 'conf_path')
-
-
-class RLMM_PT_Panel(bpy.types.Panel):
-    bl_idname = "RLMM_PT_Panel"
-    bl_label = "Objects: Location/Rotation"
+        
+class RLMM_Parent_PT_Panel(bpy.types.Panel):
+    bl_idname = "RLMM_Parent_PT_Panel"
+    bl_label = "Objects: Parent/Child"
     bl_category = "RLMM Toolkit"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_context = 'objectmode'
-    bl_options = {"DEFAULT_CLOSED"}
 
 #create a panel (class) by deriving from the bpy Panel, this be the UI
     def draw(self, context):
@@ -60,11 +58,24 @@ class RLMM_PT_Panel(bpy.types.Panel):
         
         boxLayout2 = layout.row().box()  
         boxLayout2.label(text="Object Instances",icon='LINKED')
-        boxlayout7 = boxLayout2.box()
-        boxlayout7.prop(context.scene, "scaleFACES")
-        boxlayout7.operator('custom.set_parent', text="Set Parent/Scale")
-        boxlayout7.operator('custom.make_instances_real', text="Make Instances Real")
-        
+        boxLayout4 = boxLayout2.box()
+        boxLayout4.prop(context.scene, "scaleFACES")
+        boxLayout4.operator('custom.set_parent', text="Set Parent/Scale")
+        boxLayout4.operator('custom.make_instances_real', text="Make Instances Real")
+
+class RLMM_Rotate_PT_Panel(bpy.types.Panel):
+    bl_idname = "RLMM_Rotate_PT_Panel"
+    bl_label = "Objects: Rotate"
+    bl_category = "RLMM Toolkit"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_context = 'objectmode'
+    bl_options = {"DEFAULT_CLOSED"}
+
+#create a panel (class) by deriving from the bpy Panel, this be the UI
+    def draw(self, context):
+        layout = self.layout
+    
         boxLayout3 = layout.box()
         boxLayout3.label(text="Set Rotation",icon='ORIENTATION_LOCAL')
         boxlayout8 = boxLayout3.box()
@@ -77,25 +88,65 @@ class RLMM_PT_Panel(bpy.types.Panel):
         subrow.operator('custom.set_pos_y', text="+Y")
         subrow.operator('custom.set_neg_z', text="-Z")
         subrow.operator('custom.set_pos_z', text="+Z")
+   
+
+class RLMM_Attach_PT_Panel(bpy.types.Panel):
+    bl_idname = "RLMM_Attach_PT_Panel"
+    bl_label = "Objects: Hard Attach"
+    bl_category = "RLMM Toolkit"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_context = 'objectmode'
+    bl_options = {"DEFAULT_CLOSED"}
+
+#create a panel (class) by deriving from the bpy Panel, this be the UI
+    def draw(self, context):
+        layout = self.layout
+        scn = bpy.context.scene
         
+        boxLayout1 = layout.box()
+        boxLayout1.label(text="Hard Attach to Child",icon='LINKED')
+        boxLayout2 = boxLayout1.row().box() 
+
+        rows = 3
+        row = boxLayout2.row()
+        row.template_list("Hard_Attach_UL_Items", "", scn, "hard_collection", scn, "hard_index", rows=rows)
+
+        col = row.column(align=True)
+        col.operator("custom.hard_attach_up_down", icon='ADD', text="").action = 'ADD'
+        col.operator("custom.hard_attach_up_down", icon='REMOVE', text="").action = 'REMOVE'
+        col.separator()
+        col.operator("custom.hard_attach_up_down", icon='TRIA_UP', text="").action = 'UP'
+        col.operator("custom.hard_attach_up_down", icon='TRIA_DOWN', text="").action = 'DOWN'
+
+        row = boxLayout1.row()
+        col = row.column(align=True)
+        row = col.row(align=True)
+        row.operator("custom.remove_duplicates", icon="GHOST_ENABLED")
+
+class RLMM_PT_Panel(bpy.types.Panel):
+    bl_idname = "RLMM_PT_Panel"
+    bl_label = "Objects: Location/Rotation"
+    bl_category = "RLMM Toolkit"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_context = 'objectmode'
+
+#create a panel (class) by deriving from the bpy Panel, this be the UI
+    def draw(self, context):
+        
+        layout = self.layout
+
         boxLayout9 = layout.box()
-        boxLayout9.label(text="Boost",icon='ORIENTATION_LOCAL')
+        boxLayout9.label(text="Boost",icon='AUTO')
         boxLayout10 = boxLayout9.box()
-        # boxlayout10.prop(context.scene, "collectRotations")
         boxLayout10.prop(context.scene, "customBoostMesh")
         boxLayout10.prop(context.scene, "customBoostParticles")
 
-        # subrow = boxLayout10.row(align=True)
-        # subrow.operator('custom.set_neg_x', text="-X")
-        # subrow.operator('custom.set_pos_x', text="+X")
-        # subrow.operator('custom.set_neg_y', text="-Y")
-        # subrow.operator('custom.set_pos_y', text="+Y")
-        # subrow.operator('custom.set_neg_z', text="-Z")
-        # subrow.operator('custom.set_pos_z', text="+Z")
-        
         boxLayout4 = layout.box()
         boxLayout4.label(text="Export Data",icon='EXPORT')
         boxlayout5 = boxLayout4.box()
+        boxlayout5.prop(context.scene, "ishardAttach")
         boxlayout5.prop(context.scene, "isArchetype")
         boxlayout5.prop(context.scene, "collectData")
         boxlayout5.prop(context.scene, "collectMaterials")
@@ -174,7 +225,3 @@ class errorMessage(bpy.types.Operator):
     def invoke(self, context, event):
         wm = context.window_manager
         return wm.invoke_props_dialog(self)
-
-
-# Test call.
-# bpy.ops.object.dialog_operator('INVOKE_DEFAULT')

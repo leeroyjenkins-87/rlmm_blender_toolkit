@@ -43,6 +43,14 @@ class makeInstancesReal(bpy.types.Operator):
         
             for selectedOBJ in bpy.data.objects:
                 selectedOBJ.select_set(False)
+                
+            dupeOBJ = bpy.context.scene.prefabOBJ
+            
+            dupeOBJ.select_set(True)
+            
+            bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
+            
+            dupeOBJ.select_set(False)
 
             dupePLANE = bpy.context.scene.prefabPLANE
 
