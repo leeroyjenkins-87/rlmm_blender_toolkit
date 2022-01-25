@@ -325,9 +325,9 @@ class sendToUDK(bpy.types.Operator):
         elif ('Particles' in str(objName)):
             textUDK += ''
             
-        # FORMATTING FOR PILLAR
+        # FORMATTING FOR PYLON
         # --------------------------------------------------------------------    
-        elif ('Pillar' in str(objName)):
+        elif ('Pylon' in str(objName)):
             textUDK += pillarString.format(num, '', '', locList)
             
         # FORMATTING FOR PLAYERSTART
