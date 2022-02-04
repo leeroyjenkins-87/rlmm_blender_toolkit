@@ -279,11 +279,11 @@ class sendToUDK(bpy.types.Operator):
         elif ('Boost' in str(objName)):
             
             if bpy.context.scene.customBoostMesh == True:
-                textUDK += staticMeshString.format(num, staticString, materialNames.rstrip(), physString, locList, rotList, scaleList, tagString, layerString, archetype)
+                textUDK += staticMeshString.format(num, staticString, materialNames.rstrip(), physString, locList, rotList, scaleList, tagString, layerString, archetype, hardAttach)
             elif ("Large" in str(objName)):
-                textUDK += staticMeshString.format(num, boostLgMesh, materialNames.rstrip(), physString, locList, rotList, scaleList, tagString, layerString, archetype)
+                textUDK += staticMeshString.format(num, boostLgMesh, materialNames.rstrip(), physString, locList, rotList, scaleList, tagString, layerString, archetype, hardAttach)
             else:
-                textUDK += staticMeshString.format(num, boostSmMesh, materialNames.rstrip(), physString, locList, rotList, scaleList, tagString, layerString, archetype)
+                textUDK += staticMeshString.format(num, boostSmMesh, materialNames.rstrip(), physString, locList, rotList, scaleList, tagString, layerString, archetype, hardAttach)
           
             fxLoc = [0.0, 0.0, 0.05]
             self.setBoostLoc(obj, fxLoc)    
@@ -325,10 +325,10 @@ class sendToUDK(bpy.types.Operator):
         elif ('Particles' in str(objName)):
             textUDK += ''
             
-        # FORMATTING FOR PYLON
+        # FORMATTING FOR Pylon
         # --------------------------------------------------------------------    
         elif ('Pylon' in str(objName)):
-            textUDK += pillarString.format(num, '', '', locList)
+            textUDK += pillarString.format(num, ['', ''], ['', '', '', '', '', '', '', '',' '], locList)
             
         # FORMATTING FOR PLAYERSTART
         # --------------------------------------------------------------------    
@@ -338,7 +338,11 @@ class sendToUDK(bpy.types.Operator):
         # FORMATTING FOR Interp
         # --------------------------------------------------------------------    
         elif ('Interp' in str(objName)):
-            textUDK += ''
+        
+            if isAttachChild == True:
+                num = str(bpy.context.scene.numberSequencer).zfill(10) + '_' + str(inVar7)
+                
+            textUDK += customInterpString.format(num, staticString, locList, rotList, scaleList, tagString, layerString, hardAttach, materialNames.rstrip())
             
         # FORMATTING FOR Kactor
         # --------------------------------------------------------------------    
@@ -380,6 +384,9 @@ class sendToUDK(bpy.types.Operator):
                 elif ('DynamicTrigger' in str(objName)):
                     typeString = 'DynamicTriggerVolume'
                     nameString = 'DynamicTriggerVolume_{0}'.format(num + '_' + str(count))
+                elif ('Interp' in str(objName)):
+                    typeString = 'InterpActor'
+                    nameString = 'InterpActor_{0}'.format(num + '_' + str(count))
                 else:
                     typeString = 'StaticMeshActor'
                     nameString = 'StaticMeshActor_{0}'.format(num + '_' + str(count))
@@ -395,6 +402,9 @@ class sendToUDK(bpy.types.Operator):
             elif ('DynamicTrigger' in str(objName)):
                 typeString = 'DynamicTriggerVolume'
                 nameString = 'DynamicTriggerVolume_{0}'.format(num)
+            elif ('Interp' in str(objName)):
+                typeString = 'InterpActor'
+                nameString = 'InterpActor_{0}'.format(num)
             else:
                 typeString = 'StaticMeshActor'
                 nameString = 'StaticMeshActor_{0}'.format(num)
