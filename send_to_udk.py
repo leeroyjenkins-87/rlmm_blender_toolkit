@@ -23,6 +23,25 @@ from .def_obj_vars import *
 from .cust_obj_vars import *
 from mathutils import Matrix
 
+def get_obj_class (name: str):
+    # [Search value, Class name]
+    # Not complete, but good enough for now
+    values = [
+        ['StaticMesh', 'StaticMeshActor'],
+        ['Spot', 'SpotLightToggleable'],
+        ['DynamicTrigger', 'DynamicTriggerVolume'],
+        ['GoalVolume', 'GoalVolume_TA']
+    ]
+
+    for value in values:
+        if name in value[0]: 
+            return value[1]
+
+class NumberStorageItem(bpy.types.PropertyGroup):
+    number: bpy.props.IntProperty()
+    Class: bpy.props.StringProperty()
+    objName: bpy.props.StringProperty()
+
 class sendToUDK(bpy.types.Operator):
     bl_idname = "custom.send_to_udk"
     bl_label = "Send to UDK"
@@ -67,6 +86,7 @@ class sendToUDK(bpy.types.Operator):
         objCount = inVar1
         objHolder = inVar2
         
+        bpy.context.scene.numberStorage.clear()
         outputFile = '{}{}'.format(bpy.path.abspath(bpy.context.scene.conf_path), "Blender2UDK.csv")
         
         textUDK_input = ""
@@ -187,6 +207,14 @@ class sendToUDK(bpy.types.Operator):
         # --------------------------------------------------------------------
         objName = obj.name.split('.')
         staticString = "{}".format(objName[0])
+
+        objClass = get_obj_class(obj.name)
+        
+        if objClass is not None:
+            sceneItem = bpy.context.scene.numberStorage.add()
+            sceneItem.number = bpy.context.scene.numberSequencer
+            sceneItem.Class = objClass
+            sceneItem.objName = obj.name
         
         # ArcheType
         if bpy.context.scene.isArchetype == True:

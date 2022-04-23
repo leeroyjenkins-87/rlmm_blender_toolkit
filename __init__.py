@@ -251,6 +251,7 @@ def finishRegister():
                    
         classes = [send_to_udk.sendToUDK,
                    send_to_t3d.sendToT3d,
+                   send_to_udk.NumberStorageItem,
                    def_obj_loop.defaultObjects,
                    ui.RLMMPJ_PT_Panel,
                    ui.RLMM_Parent_PT_Panel,
@@ -311,6 +312,7 @@ def finishRegister():
         
         # REGISTER THE GLOBAL INTEGAR VARIABLES FOR THE ADDON
         Scene.numberSequencer = IntProperty(name="", default=0, min=0, max=1000000000) # INT PROPERTIED FOR HOLDING NUMERIC VALUE OF CREATED OBJECTS
+        Scene.numberStorage = CollectionProperty(type=send_to_udk.NumberStorageItem)
         Scene.value = IntProperty(name="", default=0, min=-90, max=90) # INT PROPERTY FOR SETTING ROTATIONS
         Scene.errorCode = IntProperty(name="ErrorCode", default=0, min=0, max=90)
         bpy.types.Scene.hard_index = IntProperty()
