@@ -34,11 +34,11 @@ def get_obj_class (name: str):
     ]
 
     for value in values:
-        if name in value[0]: 
+        if value[0].lower() in name.lower(): 
             return value[1]
 
 class NumberStorageItem(bpy.types.PropertyGroup):
-    number: bpy.props.IntProperty()
+    number: bpy.props.StringProperty()
     Class: bpy.props.StringProperty()
     objName: bpy.props.StringProperty()
 
@@ -212,7 +212,7 @@ class sendToUDK(bpy.types.Operator):
         
         if objClass is not None:
             sceneItem = bpy.context.scene.numberStorage.add()
-            sceneItem.number = bpy.context.scene.numberSequencer
+            sceneItem.number = num
             sceneItem.Class = objClass
             sceneItem.objName = obj.name
         
