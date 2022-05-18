@@ -594,3 +594,9 @@ Begin Map
 Begin Surface
 End Surface
 End Map"""
+
+defaultPlayerPlatformMeshString = """            StaticMesh=StaticMesh'KO_Quadron_P.KO_Playground_Assets.SM.SpawnPlatform_SM'
+            LODData(0)=
+            Materials(0)=Material'KO_Quadron_P.graybox_assets.Materials.Reflective_Floor_Mat'
+            Materials(1)=MaterialInstanceConstant'KO_Quadron_P.KO_Playground_Assets.Materials.KO_TransparentHex_Blue_MAT_INST'
+            Materials(2)=MaterialInstanceConstant'KO_Quadron_P.KO_Ziggurat_Assets.Materials.MIC_KO_DarkGlassBlue'"""
