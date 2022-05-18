@@ -352,6 +352,52 @@ class sendToUDK(bpy.types.Operator):
                 num = str(bpy.context.scene.numberSequencer).zfill(10) + '_' + str(inVar7)
                 
             textUDK += customKactorString.format(num, staticString, materialNames.rstrip(), locList, rotList, scaleList, tagString, layerString, hardAttach)
+
+        # FORMATTING FOR KNOCKOUT CAMERA VOLUME
+        # AS FAR AS I CAN TELL YOU CAN'T DO AN ARCHETYPE FOR THIS 
+        # --------------------------------------------------------------------                
+        elif ('CameraVolume' in str(objName)):
+            
+            bpy.context.scene.isT3dFromSend2UDK = True
+            bpy.ops.custom.send_to_t3d()
+            
+            if isAttachChild == True:
+                num = str(bpy.context.scene.numberSequencer).zfill(10) + '_' + str(inVar7)
+
+            textUDK += cameraVolumeString.format(num, bpy.context.scene.textT3d, locList, rotList, scaleList, tagString, layerString, hardAttach)
+            
+        # FORMATTING FOR KNOCKOUT CAMERA TARGET
+        # AS FAR AS I CAN TELL YOU CAN'T DO AN ARCHETYPE FOR THIS 
+        # --------------------------------------------------------------------                
+        elif ('ActorTarget' in str(objName)):
+
+            if isAttachChild == True:
+                num = str(bpy.context.scene.numberSequencer).zfill(10) + '_' + str(inVar7)
+
+            textUDK += actorTargetString.format(num, locList, tagString, layerString, hardAttach)
+
+        # FORMATTING FOR KNOCKOUT PLAYER START PLATFORM
+        # AS FAR AS I CAN TELL YOU CAN'T DO AN ARCHETYPE FOR THIS 
+        # --------------------------------------------------------------------                
+        elif ('StartPlatform' in str(objName)):
+        
+            if bpy.context.scene.customPlayerPlatformMesh == True:
+                knockoutCustomMeshString = customPlayerPlatformMeshString.format(staticString, materialNames.rstrip())
+            else:
+                knockoutCustomMeshString = defaultPlayerPlatformMeshString                
+
+            textUDK += playerPlatformString.format(num, knockoutCustomMeshString, locList, rotList, scaleList, tagString, layerString)
+
+        # FORMATTTING FOR KNOCKOUT DEMO CAR ACTOR
+        # --------------------------------------------------------------------
+        elif ('Demo' in str(objName)):
+        
+            if bpy.context.scene.collectMaterials == False:
+                tempCarDemoMaterial = """           Materials(0)=MaterialInstanceConstant'KO_Quadron_P.KO_Ziggurat_Assets.Materials.KO_Halogram_MIC'"""
+            else:
+                tempCarDemoMaterial = materialNames.rstrip()
+        
+            textUDK += customDemoActorString.format(num, staticString, tempCarDemoMaterial, locList, rotList, scaleList, tagString, layerString)
             
         # FORMATTTING FOR EVERYTHING ELSE 
         # --------------------------------------------------------------------
@@ -365,9 +411,6 @@ class sendToUDK(bpy.types.Operator):
         return textUDK
         
     def createHardAttach(self, inVar1, inVar2):
-        # NEED TO INCREMENT NAMES OF MULTIPLE OF THE SAME TYPE
-         # Attached(0)=DynamicTriggerVolume'DynamicTriggerVolume_0000000093'
-         # Attached(1)=DynamicTriggerVolume'DynamicTriggerVolume_0000000093'
         hardAttach = ''
         num = str(bpy.context.scene.numberSequencer).zfill(10)
         count = 0

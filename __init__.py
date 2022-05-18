@@ -308,6 +308,7 @@ def finishRegister():
         Scene.customBoostParticles = BoolProperty(name="Custom Particle")
         Scene.isT3dFromSend2UDK = BoolProperty(name="isT3dFromSend2UDK")
         Scene.ishardAttach = BoolProperty(name="Hard Attach")
+        Scene.customPlayerPlatformMesh = BoolProperty(name="Custom Platform")
         
         # REGISTER THE GLOBAL INTEGAR VARIABLES FOR THE ADDON
         Scene.numberSequencer = IntProperty(name="", default=0, min=0, max=1000000000) # INT PROPERTIED FOR HOLDING NUMERIC VALUE OF CREATED OBJECTS

@@ -306,3 +306,192 @@ customAttachParentString = """\n         Attached({0})={1}'{2}'""" #.format(inde
 
 customAttachChildString = """\n         Base={0}'{1}' 
          bHardAttach=True""" #.format(meshType, meshName)
+         
+cameraVolumeString = """
+Begin Map
+   Begin Level
+      Begin Actor Class=CameraVolume_KnockOut_TA Name=CameraVolume_KnockOut_TA_{0} Archetype=CameraVolume_KnockOut_TA'tagame.Default__CameraVolume_KnockOut_TA'
+         Begin Object Class=Polys Name=Polys_{0}
+            Name="Polys_{0}"
+            ObjectArchetype=Polys'Engine.Default__Polys'
+         End Object
+         Begin Object Class=BrushComponent Name=BrushComponent0 ObjName=BrushComponent_{0} Archetype=BrushComponent'tagame.Default__CameraVolume_KnockOut_TA:BrushComponent0'
+            Brush=Model'Model_{0}'
+            ReplacementPrimitive=None
+            bAcceptsLights=True
+            CollideActors=True
+            BlockNonZeroExtent=True
+            bDisableAllRigidBody=True
+            AlwaysLoadOnClient=True
+            AlwaysLoadOnServer=True
+            LightingChannels=(bInitialized=True,Dynamic=True)
+            Name="BrushComponent_{0}"
+            ObjectArchetype=BrushComponent'tagame.Default__CameraVolume_KnockOut_TA:BrushComponent0'
+         End Object
+         Begin Brush Name=Model_{0}
+{1}
+         End Brush
+         Brush=Model'Model_{0}'
+         BrushComponent=BrushComponent'BrushComponent_{0}'
+         Components(0)=BrushComponent'BrushComponent_{0}'
+         Location=(X={2[0]:.6f},Y={2[1]:.6f},Z={2[2]:.6f})
+         Rotation=(Pitch={3[0]:.0f},Yaw={3[1]:.0f},Roll={3[2]:.0f})
+         DrawScale3D=(X={4[0]:.6f},Y={4[1]:.6f},Z={4[2]:.6f})
+         CreationTime=0
+         Tag="{5}"
+         Layer="{6}"{7}
+         CollisionComponent=BrushComponent'BrushComponent_{0}'
+         Name="{5}_{0}"
+         ObjectArchetype=CameraVolume_KnockOut_TA'tagame.Default__CameraVolume_KnockOut_TA'
+      End Actor
+   End Level
+Begin Surface
+End Surface
+End Map
+"""
+
+actorTargetString = """
+Begin Map
+   Begin Level
+      Begin Actor Class=ActorTarget_TA Name=ActorTarget_TA_{0} Archetype=ActorTarget_TA'tagame.Default__ActorTarget_TA'
+         TargetClass=Class'tagame.Target_World_TA'
+         Location=(X={1[0]:.6f},Y={1[1]:.6f},Z={1[2]:.6f})
+         CreationTime=502.338135
+         Tag="{2}"
+         Layer="{3}"{4}
+         Name="ActorTarget_TA_{0}"
+         ObjectArchetype=ActorTarget_TA'tagame.Default__ActorTarget_TA'
+      End Actor
+   End Level
+Begin Surface
+End Surface
+End Map
+"""
+
+playerPlatformString = """
+Begin Map
+   Begin Level
+      Begin Actor Class=PlayerStart_Platform_TA Name=PlayerStart_Platform_TA_{0} Archetype=PlayerStart_Platform_TA'tagame.Default__PlayerStart_Platform_TA'
+         Begin Object Class=StaticMeshComponent Name=StaticMeshComponent0 ObjName=StaticMeshComponent_{0} Archetype=StaticMeshComponent'tagame.Default__PlayerStart_Platform_TA:StaticMeshComponent0'
+            {1}
+            ReplacementPrimitive=None
+            bAcceptsDynamicLights=False
+            bUsePrecomputedShadows=True
+            LightingChannels=(bInitialized=True,Static=True)
+            RBCollideWithChannels=(Vehicle=True,GameplayPhysics=True,EffectPhysics=True,Ball=True)
+			Translation=(X=0.000000,Y=0.000000,Z=-128.000000)
+            Name="StaticMeshComponent_{0}"
+            ObjectArchetype=StaticMeshComponent'tagame.Default__PlayerStart_Platform_TA:StaticMeshComponent0'
+			CustomProperties
+         End Object
+         Begin Object Class=CylinderComponent Name=CollisionCylinder ObjName=CylinderComponent_{0} Archetype=CylinderComponent'tagame.Default__PlayerStart_Platform_TA:CollisionCylinder'
+            CollisionHeight=80.000000
+            CollisionRadius=40.000000
+            ReplacementPrimitive=None
+            LightingChannels=(bInitialized=True,Dynamic=True)
+            Name="CylinderComponent_{0}"
+            ObjectArchetype=CylinderComponent'tagame.Default__PlayerStart_Platform_TA:CollisionCylinder'
+         End Object
+         Begin Object Class=SpriteComponent Name=Sprite ObjName=SpriteComponent_{0} Archetype=SpriteComponent'tagame.Default__PlayerStart_Platform_TA:Sprite'
+            Sprite=Texture2D'EditorResources.S_Player'
+            SpriteCategoryName="PlayerStart"
+            ReplacementPrimitive=None
+            HiddenGame=True
+            HiddenEditor=True
+            AlwaysLoadOnClient=False
+            AlwaysLoadOnServer=False
+            LightingChannels=(bInitialized=True,Dynamic=True)
+            Name="SpriteComponent_{0}"
+            ObjectArchetype=SpriteComponent'tagame.Default__PlayerStart_Platform_TA:Sprite'
+         End Object
+         Begin Object Class=SpriteComponent Name=Sprite2 ObjName=SpriteComponent_{0}_2 Archetype=SpriteComponent'tagame.Default__PlayerStart_Platform_TA:Sprite2'
+            Sprite=Texture2D'EditorResources.Bad'
+            SpriteCategoryName="Navigation"
+            ReplacementPrimitive=None
+            HiddenGame=True
+            AlwaysLoadOnClient=False
+            AlwaysLoadOnServer=False
+            LightingChannels=(bInitialized=True,Dynamic=True)
+            Scale=0.250000
+            Name="SpriteComponent_{0}_2"
+            ObjectArchetype=SpriteComponent'tagame.Default__PlayerStart_Platform_TA:Sprite2'
+         End Object
+         Begin Object Class=ArrowComponent Name=Arrow ObjName=ArrowComponent_{0} Archetype=ArrowComponent'tagame.Default__PlayerStart_Platform_TA:Arrow'
+            ArrowColor=(B=255,G=200,R=150,A=255)
+            ArrowSize=0.500000
+            bTreatAsASprite=True
+            SpriteCategoryName="Navigation"
+            ReplacementPrimitive=None
+            LightingChannels=(bInitialized=True,Dynamic=True)
+            Name="ArrowComponent_{0}"
+            ObjectArchetype=ArrowComponent'tagame.Default__PlayerStart_Platform_TA:Arrow'
+         End Object
+         Begin Object Class=PathRenderingComponent Name=PathRenderer ObjName=PathRenderingComponent_{0} Archetype=PathRenderingComponent'tagame.Default__PlayerStart_Platform_TA:PathRenderer'
+            ReplacementPrimitive=None
+            LightingChannels=(bInitialized=True,Dynamic=True)
+            Name="PathRenderingComponent_{0}"
+            ObjectArchetype=PathRenderingComponent'tagame.Default__PlayerStart_Platform_TA:PathRenderer'
+         End Object
+         StaticMeshComponent=StaticMeshComponent'StaticMeshComponent_{0}'
+         bPathsChanged=True
+         CylinderComponent=CylinderComponent'CylinderComponent_{0}'
+         Components(0)=SpriteComponent'SpriteComponent_{0}'
+         Components(1)=SpriteComponent'SpriteComponent_{0}_2'
+         Components(2)=ArrowComponent'ArrowComponent_{0}'
+         Components(3)=CylinderComponent'CylinderComponent_{0}'
+         Components(4)=PathRenderingComponent'PathRenderingComponent_{0}'
+         Components(5)=StaticMeshComponent'StaticMeshComponent_{0}'
+         Location=(X={2[0]:.6f},Y={2[1]:.6f},Z={2[2]:.6f})
+         Rotation=(Pitch={3[0]:.0f},Yaw={3[1]:.0f},Roll={3[2]:.0f})
+         DrawScale3D=(X={4[0]:.6f},Y={4[1]:.6f},Z={4[2]:.6f})
+         CreationTime=0
+         Tag="{5}"
+         Layer="{6}"
+         CollisionComponent=StaticMeshComponent'StaticMeshComponent_{0}'
+         Name="{5}_{0}"
+         ObjectArchetype=PlayerStart_Platform_TA'tagame.Default__PlayerStart_Platform_TA'
+      End Actor
+   End Level
+Begin Surface
+End Surface
+End Map
+"""
+            
+customPlayerPlatformMeshString = """
+            StaticMesh=StaticMesh'{1}'
+            {2}
+"""
+
+customDemoActorString = """
+Begin Map
+   Begin Level
+      Begin Actor Class=CarDemoActor_TA Name=CarDemoActor_TA_{0} Archetype=CarDemoActor_TA'tagame.Default__CarDemoActor_TA'
+         Begin Object Class=StaticMeshComponent Name=StaticMeshComponent0 ObjName=StaticMeshComponent_{0} Archetype=StaticMeshComponent'tagame.Default__CarDemoActor_TA:StaticMeshComponent0'
+            {1}
+            {2}
+            ReplacementPrimitive=None
+            BlockActors=False
+            AlwaysLoadOnClient=False
+            LightingChannels=(bInitialized=True,Dynamic=True)
+            RBCollideWithChannels=(Vehicle=True,GameplayPhysics=True,EffectPhysics=True,Ball=True)
+            TickGroup=TG_DuringAsyncWork
+            Name="StaticMeshComponent_{0}"
+            ObjectArchetype=StaticMeshComponent'tagame.Default__CarDemoActor_TA:StaticMeshComponent0'
+         End Object
+         StaticMeshComponent=StaticMeshComponent'StaticMeshComponent_{0}'
+         Components(0)=StaticMeshComponent'StaticMeshComponent_{0}'
+         Location=(X={3[0]:.6f},Y={3[1]:.6f},Z={3[2]:.6f})
+         Rotation=(Pitch={4[0]:.0f},Yaw={4[1]:.0f},Roll={4[2]:.0f})
+         DrawScale3D=(X={5[0]:.6f},Y={5[1]:.6f},Z={5[2]:.6f})
+         CreationTime=0
+         Tag="{6}"
+         Layer="{7}"
+         CollisionComponent=StaticMeshComponent'StaticMeshComponent_{0}'
+         Name="{6}_{0}"
+         ObjectArchetype=CarDemoActor_TA'tagame.Default__CarDemoActor_TA'
+      End Actor
+   End Level
+Begin Surface
+End Surface
+End Map
+"""

@@ -136,6 +136,11 @@ class RLMM_PT_Panel(bpy.types.Panel):
     def draw(self, context):
         
         layout = self.layout
+        
+        boxLayout11 = layout.box()
+        boxLayout11.label(text="Kockout",icon='EVENT_K')
+        boxLayout12 = boxLayout11.box()
+        boxLayout12.prop(context.scene, "customPlayerPlatformMesh")
 
         boxLayout9 = layout.box()
         boxLayout9.label(text="Boost",icon='AUTO')
